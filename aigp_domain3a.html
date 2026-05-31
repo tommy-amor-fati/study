@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIGP試験対策 — ドメインIII.A AIシステムの設計・構築ガバナンス</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1410;
+  --ink2: #3d3028;
+  --ink3: #7a6a5a;
+  --paper: #faf8f4;
+  --paper2: #f2ede4;
+  --paper3: #e8e0d0;
+  --rule: rgba(90,70,50,0.15);
+  --rule2: rgba(90,70,50,0.08);
+  --accent: #8b2e00;
+  --accent2: #c0520a;
+  --accent-light: rgba(139,46,0,0.07);
+  --accent-mid: rgba(139,46,0,0.13);
+  --sidebar: 280px;
+  --serif: 'Noto Serif JP', 'Georgia', serif;
+  --sans: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
+  --mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #e8dfd0;
+    --ink2: #c8b8a0;
+    --ink3: #8a7a68;
+    --paper: #1a1610;
+    --paper2: #221e16;
+    --paper3: #2c271e;
+    --rule: rgba(200,180,150,0.12);
+    --rule2: rgba(200,180,150,0.06);
+    --accent: #d4622a;
+    --accent2: #e8883c;
+    --accent-light: rgba(212,98,42,0.10);
+    --accent-mid: rgba(212,98,42,0.18);
+  }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body { background: var(--paper); color: var(--ink); font-family: var(--serif); line-height: 1.85; }
+
+#prog { position: fixed; top: 0; left: 0; height: 3px; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent2)); z-index: 9999; transition: width 0.1s linear; }
+
+#nav { position: fixed; top: 0; left: 0; height: 100vh; width: var(--sidebar); background: var(--paper2); border-right: 1px solid var(--rule); overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; z-index: 100; transition: transform 0.3s ease; }
+#nav::-webkit-scrollbar { width: 4px; }
+#nav::-webkit-scrollbar-track { background: transparent; }
+#nav::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 2px; }
+
+.nav-masthead { padding: 28px 20px 22px; border-bottom: 1px solid var(--rule); flex-shrink: 0; }
+.nav-series { font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); font-weight: 500; display: block; margin-bottom: 8px; }
+.nav-title { font-family: var(--serif); font-size: 13.5px; font-weight: 600; line-height: 1.5; color: var(--ink); }
+.nav-sub-info { font-family: var(--sans); font-size: 11px; color: var(--ink3); margin-top: 6px; line-height: 1.4; }
+
+.nav-chapters { padding: 14px 0 28px; flex: 1; }
+.nav-section-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink3); padding: 12px 20px 6px; display: block; }
+.nav-ch { display: flex; align-items: baseline; gap: 8px; padding: 7px 20px; color: var(--ink2); font-family: var(--sans); font-size: 12.5px; text-decoration: none; font-weight: 500; border-left: 2px solid transparent; transition: all 0.18s ease; line-height: 1.4; }
+.nav-ch:hover { color: var(--accent); background: var(--accent-light); }
+.nav-ch.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-light); }
+.nav-ch-num { font-family: var(--mono); font-size: 10px; color: var(--ink3); flex-shrink: 0; padding-top: 1px; }
+.nav-sub { display: block; padding: 4px 20px 4px 42px; color: var(--ink3); font-family: var(--sans); font-size: 11px; text-decoration: none; border-left: 2px solid transparent; transition: all 0.15s ease; line-height: 1.4; }
+.nav-sub:hover { color: var(--accent); background: var(--accent-light); }
+.nav-sub.active { color: var(--accent2); border-left-color: var(--accent2); }
+
+#menu-btn { display: none; position: fixed; top: 14px; left: 14px; z-index: 200; width: 40px; height: 40px; border: 1px solid var(--rule); background: var(--paper2); border-radius: 6px; cursor: pointer; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+#menu-btn span { display: block; width: 18px; height: 1.5px; background: var(--ink2); border-radius: 2px; }
+#overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 90; }
+
+@media (max-width: 960px) {
+  #menu-btn { display: flex; }
+  #nav { transform: translateX(-100%); }
+  #nav.open { transform: translateX(0); box-shadow: 4px 0 20px rgba(0,0,0,0.2); }
+  #overlay.open { display: block; }
+  #main { margin-left: 0 !important; padding-top: 64px; }
+}
+@media (max-width: 480px) {
+  :root { --sidebar: 260px; }
+  #main { padding: 56px 20px 60px; }
+}
+
+#main { margin-left: var(--sidebar); max-width: 760px; padding: 0 52px 80px; }
+@media (max-width: 1200px) { #main { padding: 0 36px 80px; } }
+@media (max-width: 960px) { #main { padding: 64px 28px 60px; } }
+
+#cover { padding: 80px 0 64px; border-bottom: 1px solid var(--rule); margin-bottom: 64px; }
+.cover-eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 20px; }
+.cover-title { font-family: var(--serif); font-size: clamp(22px, 3.5vw, 32px); font-weight: 700; line-height: 1.4; color: var(--ink); margin-bottom: 12px; }
+.cover-subtitle { font-family: var(--sans); font-size: 15px; color: var(--ink2); margin-bottom: 28px; line-height: 1.7; font-weight: 300; }
+.cover-meta { display: flex; flex-wrap: wrap; gap: 16px; padding-top: 20px; border-top: 1px solid var(--rule); }
+.cover-meta-item { font-family: var(--mono); font-size: 11px; color: var(--ink3); letter-spacing: 0.06em; }
+.cover-meta-item strong { color: var(--ink2); }
+.cover-abstract { margin-top: 28px; padding: 22px 24px; background: var(--accent-light); border-left: 3px solid var(--accent); border-radius: 0 4px 4px 0; font-family: var(--sans); font-size: 14px; line-height: 1.85; color: var(--ink2); }
+
+.chapter { margin-bottom: 72px; padding-top: 16px; border-top: 2px solid var(--rule); }
+.ch-header { margin-bottom: 36px; padding-bottom: 24px; border-bottom: 1px solid var(--rule); }
+.ch-number { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 10px; }
+.ch-title { font-family: var(--serif); font-size: clamp(18px, 2.5vw, 24px); font-weight: 700; line-height: 1.45; color: var(--ink); margin-bottom: 10px; }
+.ch-pi-badge { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 10px; background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent-mid); padding: 3px 10px; border-radius: 20px; letter-spacing: 0.06em; }
+.ch-lead { margin-top: 14px; font-family: var(--sans); font-size: 14.5px; color: var(--ink2); line-height: 1.8; font-weight: 300; }
+
+.sec { margin-bottom: 44px; }
+.sec-title { font-family: var(--serif); font-size: 16.5px; font-weight: 700; color: var(--ink); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--rule); position: relative; padding-left: 14px; }
+.sec-title::before { content: ''; position: absolute; left: 0; top: 3px; bottom: 3px; width: 3px; background: var(--accent); border-radius: 2px; }
+p { font-family: var(--sans); font-size: 14.5px; line-height: 1.9; color: var(--ink2); margin-bottom: 14px; }
+
+.table-wrap { overflow-x: auto; margin: 24px 0; }
+table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 13px; }
+thead tr { background: var(--paper3); }
+thead th { text-align: left; padding: 10px 14px; font-weight: 700; color: var(--ink); border-bottom: 2px solid var(--accent); font-size: 12px; letter-spacing: 0.02em; }
+tbody tr { border-bottom: 1px solid var(--rule); }
+tbody tr:nth-child(even) { background: var(--rule2); }
+tbody td { padding: 10px 14px; color: var(--ink2); line-height: 1.65; vertical-align: top; }
+tbody td:first-child { font-weight: 600; color: var(--ink); }
+
+.pullquote { margin: 28px 0; padding: 20px 24px; border-left: 4px solid var(--accent); font-family: var(--serif); font-size: 15.5px; font-style: italic; color: var(--ink2); line-height: 1.75; background: var(--accent-light); }
+
+.callout { margin: 24px 0; padding: 18px 22px; background: var(--paper2); border: 1px solid var(--rule); border-radius: 4px; }
+.callout-label { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 8px; }
+.callout p { margin-bottom: 0; font-size: 13.5px; }
+
+.column { margin: 28px 0; padding: 20px 22px; border: 2px solid var(--rule); border-radius: 4px; background: var(--paper3); }
+.column-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent2); display: block; margin-bottom: 12px; font-weight: 600; }
+
+.summary { margin: 28px 0; padding: 18px 22px; border: 1px solid var(--accent-mid); border-radius: 4px; background: var(--accent-light); }
+.summary-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; display: block; }
+.summary ul { padding-left: 0; list-style: none; }
+.summary li { font-family: var(--sans); font-size: 13.5px; line-height: 1.75; color: var(--ink2); margin-bottom: 8px; padding-left: 18px; position: relative; }
+.summary li::before { content: '—'; position: absolute; left: 0; color: var(--accent); font-weight: 300; }
+
+.fig { margin: 28px 0; padding: 20px; background: var(--paper2); border: 1px solid var(--rule); border-radius: 6px; text-align: center; }
+.fig-cap { font-family: var(--mono); font-size: 11px; color: var(--ink3); display: block; margin-bottom: 14px; text-align: left; letter-spacing: 0.06em; }
+
+.quiz-item { margin-bottom: 40px; padding: 24px; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper2); }
+.quiz-header { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 14px; }
+.quiz-q { font-family: var(--sans); font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.7; margin-bottom: 16px; }
+.quiz-options { margin-bottom: 16px; }
+.quiz-option { display: block; padding: 8px 12px; font-family: var(--sans); font-size: 13px; color: var(--ink2); line-height: 1.6; margin-bottom: 6px; border-radius: 3px; }
+.quiz-option.correct { background: rgba(0,120,40,0.08); color: var(--ink); border-left: 3px solid #2d8a4e; }
+.quiz-answer { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; font-weight: 600; color: #2d8a4e; margin-bottom: 10px; display: block; }
+.quiz-explain { font-family: var(--sans); font-size: 13px; color: var(--ink2); line-height: 1.75; padding-top: 12px; border-top: 1px solid var(--rule); }
+
+.glossary-item { margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid var(--rule2); }
+.glossary-term { font-family: var(--serif); font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+.glossary-def { font-family: var(--sans); font-size: 13.5px; color: var(--ink2); line-height: 1.8; padding-left: 16px; border-left: 2px solid var(--rule); }
+
+#appendix { padding-top: 40px; margin-top: 56px; border-top: 2px solid var(--rule); }
+.appendix-title { font-family: var(--serif); font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 28px; }
+
+.flow-code { font-family: var(--mono); font-size: 12px; background: var(--paper3); color: var(--ink2); padding: 18px 20px; border-radius: 4px; line-height: 1.65; overflow-x: auto; white-space: pre; margin: 20px 0; border-left: 3px solid var(--accent); }
+
+.body-list { padding-left: 20px; margin: 12px 0 18px; }
+.body-list li { font-family: var(--sans); font-size: 14px; color: var(--ink2); line-height: 1.8; margin-bottom: 8px; }
+.body-list li::marker { color: var(--accent); }
+
+.sub-heading { font-family: var(--sans); font-size: 15px; font-weight: 700; color: var(--ink2); margin: 22px 0 10px; }
+
+.ref-list { list-style: none; padding: 0; }
+.ref-list li { font-family: var(--sans); font-size: 12.5px; color: var(--ink3); line-height: 1.7; margin-bottom: 10px; padding-left: 28px; position: relative; }
+.ref-list li::before { content: attr(data-num); position: absolute; left: 0; font-family: var(--mono); font-size: 11px; color: var(--accent); }
+.ref-list a { color: var(--accent2); text-decoration: none; word-break: break-all; }
+.ref-list a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div id="prog"></div>
+
+<button id="menu-btn" aria-label="メニューを開く">
+  <span></span><span></span><span></span>
+</button>
+<div id="overlay"></div>
+
+<nav id="nav">
+  <div class="nav-masthead">
+    <span class="nav-series">AIGP 試験対策レポート</span>
+    <div class="nav-title">ドメインIII.A<br>AI設計・構築ガバナンス</div>
+    <div class="nav-sub-info">IAPP AIGP Body of Knowledge v2.1.0</div>
+  </div>
+  <div class="nav-chapters">
+    <span class="nav-section-label">概要</span>
+    <a class="nav-ch" href="#cover"><span class="nav-ch-num">—</span>コンピテンシーの概要</a>
+    <span class="nav-section-label">パフォーマンス指標</span>
+    <a class="nav-ch" href="#ch1"><span class="nav-ch-num">PI 1</span>ビジネスコンテキストの定義</a>
+    <a class="nav-sub" href="#ch1-def">概念の定義</a>
+    <a class="nav-sub" href="#ch1-fw">フレームワーク</a>
+    <a class="nav-sub" href="#ch1-case">実務適用例</a>
+    <a class="nav-sub" href="#ch1-trap">試験の罠</a>
+    <a class="nav-sub" href="#ch1-domain2">ドメインII接続</a>
+    <a class="nav-ch" href="#ch2"><span class="nav-ch-num">PI 2</span>影響評価の実施とレビュー</a>
+    <a class="nav-sub" href="#ch2-def">概念の定義</a>
+    <a class="nav-sub" href="#ch2-fw">フレームワーク</a>
+    <a class="nav-sub" href="#ch2-case">実務適用例</a>
+    <a class="nav-sub" href="#ch2-trap">試験の罠</a>
+    <a class="nav-sub" href="#ch2-domain2">ドメインII接続</a>
+    <a class="nav-ch" href="#ch3"><span class="nav-ch-num">PI 3</span>ポリシー・倫理的配慮の適用</a>
+    <a class="nav-sub" href="#ch3-def">概念の定義</a>
+    <a class="nav-sub" href="#ch3-fw">フレームワーク</a>
+    <a class="nav-sub" href="#ch3-8req">8つのコア要件</a>
+    <a class="nav-sub" href="#ch3-trap">試験の罠</a>
+    <a class="nav-sub" href="#ch3-domain2">ドメインII接続</a>
+    <a class="nav-ch" href="#ch4"><span class="nav-ch-num">PI 4</span>内部・外部リスクの管理</a>
+    <a class="nav-sub" href="#ch4-def">概念の定義</a>
+    <a class="nav-sub" href="#ch4-fw">フレームワーク</a>
+    <a class="nav-sub" href="#ch4-tools">6つのコアツール</a>
+    <a class="nav-sub" href="#ch4-trap">試験の罠</a>
+    <a class="nav-sub" href="#ch4-domain2">ドメインII接続</a>
+    <a class="nav-ch" href="#ch5"><span class="nav-ch-num">PI 5</span>設計・構築プロセスの文書化</a>
+    <a class="nav-sub" href="#ch5-def">概念の定義</a>
+    <a class="nav-sub" href="#ch5-fw">フレームワーク</a>
+    <a class="nav-sub" href="#ch5-case">実務適用例</a>
+    <a class="nav-sub" href="#ch5-trap">試験の罠</a>
+    <a class="nav-sub" href="#ch5-domain2">ドメインII接続</a>
+    <span class="nav-section-label">付録</span>
+    <a class="nav-ch" href="#glossary"><span class="nav-ch-num">—</span>重要用語解説</a>
+    <a class="nav-ch" href="#quiz"><span class="nav-ch-num">—</span>模擬試験問題（5問）</a>
+    <a class="nav-ch" href="#references"><span class="nav-ch-num">—</span>引用文献</a>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- COVER -->
+<section id="cover">
+  <span class="cover-eyebrow">IAPP AIGP 試験対策 学術レポート</span>
+  <h1 class="cover-title">ドメインIII.A — AIシステムの設計および構築における<br>ガバナンスの統制</h1>
+  <p class="cover-subtitle">AI開発統制の実践知：ビジネスコンテキストからリスク管理・文書化まで</p>
+  <div class="cover-meta">
+    <span class="cover-meta-item"><strong>規格基盤</strong>：EU AI Act 2024/1689 / NIST AI RMF 1.0 / ISO/IEC 42001:2023</span>
+    <span class="cover-meta-item"><strong>対象試験</strong>：AIGP BoK v2.1.0 — Domain III.A</span>
+    <span class="cover-meta-item"><strong>PI数</strong>：Performance Indicator 1〜5</span>
+  </div>
+  <div class="cover-abstract">
+    <p>人工知能（AI）ガバナンスの実務において、設計および構築フェーズ（Designing and Building Phase）は、システム全体の安全性、公平性、透明性、および法的適合性を決定づける最も重要なライフサイクル段階に位置づけられる。IAPP認定AIガバナンスプロフェッショナル（AIGP）のシラバス（Body of Knowledge v2.1.0）に基づき、ドメインIII.Aは「AI開発の統制」というマクロな視点から、企画・設計段階におけるガバナンス管理策の実践を要求している。このフェーズにおける初期的な決定は、その後のモデルトレーニング、テスト、リリース、そして本番配備後の監視におけるリスク管理のコストと有効性に決定的な影響を与える。</p>
+    <p>AIガバナンスプロフェッショナルに求められるアプローチは、AIモデルを直接実装するデータサイエンティストやエンジニアの技術的視点とは明確に異なる。開発チームが予測精度、計算効率、または適合度（F1スコア）といった定量的かつシステム中心の指標に注力するのに対し、ガバナンス専門家は、そのシステムがもたらす社会的・組織的インパクト、人権侵害の防止、適用されるグローバル法規制への適合性、そして組織のパーパスや倫理原則とのアライメントを体系的に管理・レビューする役割を担う。</p>
+    <p>本レポートは、欧州連合（EU）AI法（Regulation (EU) 2024/1689）、NIST AIリスクマネジメントフレームワーク（AI RMF 1.0）、および国際標準規格ISO/IEC 42001:2023を基礎として構成されている。各パフォーマンスインジケーター（実務能力指標）について、AIガバナンスの実務における概念の定義、鍵となるフレームワークとのマッピング、実務的なユースケース分析、試験対策として重要となる陥りがちな罠、およびドメインIIの規制要件との接続性を包括的に整理する。</p>
+  </div>
+</section>
+
+<!-- CHAPTER 1 -->
+<section class="chapter" id="ch1">
+  <div class="ch-header">
+    <span class="ch-number">Performance Indicator 1</span>
+    <h2 class="ch-title">AIシステムのビジネスコンテキストとユースケースの定義</h2>
+    <span class="ch-pi-badge">PI 1 — ビジネスコンテキスト定義</span>
+    <p class="ch-lead">開発プロセスに着手する前に、AI技術を導入する本質的な目的、動作するオペレーショナル環境、対象ユーザー、および影響を受けるステークホルダーの範囲を明確に規定・文書化するプロセス。プロジェクト自体の妥当性を検証する「go/no-go」ゲートキーパーとして機能する。</p>
+  </div>
+
+  <div class="sec" id="ch1-def">
+    <h3 class="sec-title">AIガバナンスにおける概念の定義</h3>
+    <p>AIガバナンスにおける「ビジネスコンテキストとユースケースの定義」とは、開発プロセスに着手する前に、AI技術を導入する本質的な目的、動作するオペレーショナル環境、対象ユーザー、およびシステムが直接的または間接的に影響を与えるステークホルダーの範囲を明確に規定し、文書化するプロセスを指す。これは単なるシステム仕様書の作成ではなく、そもそも「なぜAIを導入するのか」「非AI技術の代替手段では目的を達成できないのか」という技術的手段の必要性を問い、開発プロジェクト自体の妥当性を検証する初期的な「go/no-go」判断のゲートキーパーとして機能する。</p>
+    <div class="pullquote">
+      ガバナンスプロフェッショナルに求められるアプローチは、AIモデルを直接実装するデータサイエンティストやエンジニアの技術的視点とは明確に異なる。開発チームが予測精度・計算効率・F1スコアに注力するのに対し、ガバナンス専門家は、システムがもたらす社会的・組織的インパクト、人権侵害の防止、グローバル法規制への適合性、および倫理原則とのアライメントを体系的に管理・レビューする役割を担う。
+    </div>
+  </div>
+
+  <div class="sec" id="ch1-fw">
+    <h3 class="sec-title">関連する主要フレームワークと規格</h3>
+    <p><strong>NIST AI RMF 1.0 — MAP 1</strong>は、ビジネスコンテキスト、組織の使命、価値観、およびユースケースに特有の要件や期待されるベネフィットを深く理解するための基盤を提供している。</p>
+    <p><strong>ISO/IEC 42001:2023 Annex A.6.2.2（AIシステムの要件と仕様）およびA.9.4（AIシステムの意図された使用）</strong>では、開発または利用するすべてのAIシステムについて、開発の動機、技術要件、および運用限界を明文化することが要求される。</p>
+    <p><strong>EU AI法</strong>は、AIシステムが「自律的な判断を推論し、環境に影響を与える能力」を本質的特徴と定めており、その挙動が適用されるコンテキストにおいて許容されるかを定義することがガバナンスの第一歩となる。</p>
+  </div>
+
+  <div class="sec" id="ch1-case">
+    <h3 class="sec-title">実務での適用例：AI採用フィルタリングシステムのビジネスコンテキスト定義</h3>
+    <p>ある多国籍企業において、新卒採用の業務効率化のためにAI採用フィルタリングシステムを導入する計画が浮上した。この際、ガバナンスプロフェッショナルは、データサイエンスチームにアルゴリズムの実装を許可する前に、以下のコンテキスト管理表を作成し、システム要件の境界を定義する。</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>コンテキスト要素</th>
+            <th>定義される具体的な内容と境界値</th>
+            <th>ガバナンス上の意図</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>意図された使用（Intended Use）</td>
+            <td>過去の採用データに基づくスキル要件、資格の有無、および記述回答の言語解析による初期スクリーニング支援</td>
+            <td>使用目的を明確にし、想定外の領域への流用を防止する</td>
+          </tr>
+          <tr>
+            <td>対象外の使用（Off-label Use）</td>
+            <td>役員レベルの採用選考への流用、および個人の性格診断や精神分析目的での使用の禁止</td>
+            <td>不適切な動作環境での推論エラーやプライバシー侵害を未然に防ぐ</td>
+          </tr>
+          <tr>
+            <td>影響を受ける人々</td>
+            <td>新卒求職者（特に多国籍な背景を持つ者、障害を持つ者、インターネット接続環境に差がある者）</td>
+            <td>デジタルデバイドや差別的影響を受けやすい脆弱な集団を特定する</td>
+          </tr>
+          <tr>
+            <td>非AI代替手段の評価</td>
+            <td>条件付き静的ルールエンジン（機械学習を用いない単純なキーワード・資格フィルタリングプログラム）の比較評価</td>
+            <td>機械学習の確率的な不確実性とバイアスリスクを許容してまでAIを採用する必然性を検証する</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec" id="ch1-trap">
+    <h3 class="sec-title">試験対策：よくある罠と誤解</h3>
+    <div class="callout">
+      <span class="callout-label">⚠️ 頻出の誤解パターン</span>
+      <p>AIGP試験においては、技術的な最適化とガバナンス上のコンテキスト定義を混同させる問題が頻出する。例えば、「モデルの予測効率を上げるために特徴量の次元削減を行った。これはコンテキスト定義であるか」という問いに対しては、「否」と答えなければならない。次元削減は純粋なエンジニアリングタスクであり、ガバナンス上の定義は「システムの運用限界（Operational Boundaries）の設定」や「悪用シナリオ（Foreseeable Misuse）の文書化」を意味する。また、オープンソースモデルや外部APIを調達して統合するだけのケース（Deployerとしての役割）であっても、自社の特定のビジネスプロセスに組み込む以上、コンテキスト定義およびリスク評価の責任は免除されない。</p>
+    </div>
+  </div>
+
+  <div class="sec" id="ch1-domain2">
+    <h3 class="sec-title">ドメインII（規制要件）との接続</h3>
+    <p>EU AI法（第6条およびAnnex III）において、AIシステムが厳格な法的遵守義務を伴う「高リスク（High-Risk）」に分類されるかどうかは、そのAI技術の仕様ではなく、適用される「ビジネスコンテキストとユースケース（例：教育、雇用、与信評価等）」によってのみ決定される。したがって、ドメインIII.Aにおける初期のビジネスコンテキストの誤認は、ドメインIIにおける適合性評価（Conformity Assessment）プロセスの不履行という重大な法的非コンプライアンスへと直結する。</p>
+    <div class="summary">
+      <span class="summary-title">PI 1 接続ポイント</span>
+      <ul>
+        <li>初期のビジネスコンテキストの誤認 → ドメインIIにおける適合性評価（Conformity Assessment）プロセスの不履行という重大な法的非コンプライアンスへ直結</li>
+        <li>高リスク分類はAI技術仕様ではなくユースケースで決まる（EU AI法 第6条 / Annex III）</li>
+        <li>NIST AI RMF MAP 1 — コンテキストと使命の理解が基盤</li>
+        <li>ISO/IEC 42001 A.6.2.2 / A.9.4 — 意図された使用の明文化を要求</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CHAPTER 2 -->
+<section class="chapter" id="ch2">
+  <div class="ch-header">
+    <span class="ch-number">Performance Indicator 2</span>
+    <h2 class="ch-title">AIシステムにおける影響評価（Impact Assessment）の実施とレビュー</h2>
+    <span class="ch-pi-badge">PI 2 — 影響評価</span>
+    <p class="ch-lead">AIシステムのライフサイクル全体を通じて、システムが個人・グループ・社会・環境に与える潜在的な好影響と悪影響を体系的に特定・分析・評価・治療（低減）する予防的かつ反復的なデューデリジェンスの枠組み。一度作成して完了するチェックリストではなく、定期的にレビュー・更新される動的なシステム管理プロセスである。</p>
+  </div>
+
+  <div class="sec" id="ch2-def">
+    <h3 class="sec-title">AIガバナンスにおける概念の定義</h3>
+    <p>AIガバナンスにおける影響評価（Impact Assessment / 影響アセスメント）とは、AIシステムの設計、開発、デプロイ、および継続的な運用のライフサイクル全体を通じて、システムが個人、グループ、社会全般、および環境に与える潜在的な好影響と悪影響を体系的に特定、分析、評価、および治療（低減）する予防的かつ反復的なデューデリジェンスの枠組みを指す。影響評価は一度作成して完了するチェックリストではなく、システムやデータの変化に伴って定期的にレビュー・更新される動的なシステム管理プロセスである。</p>
+  </div>
+
+  <div class="sec" id="ch2-fw">
+    <h3 class="sec-title">関連する主要フレームワークと規格</h3>
+    <ul class="body-list">
+      <li><strong>EU AI Act 第29a条（基本的権利影響評価: FRIA）</strong>：高リスクAIシステムを導入する特定のdeployer（公共機関、金融機関等）に対し、稼働開始前に、個人の基本的権利（差別、プライバシー、民主主義的プロセス等）への影響評価の実施と、所管官庁への登録を義務付けている。</li>
+      <li><strong>ISO/IEC 42001:2023 Clause 6.1.4 / Annex A.5</strong>：AIシステムのライフサイクルを通じて、個人、グループ、および社会に及ぼす影響評価プロセスを確立・文書化し、その評価結果をリスクマネジメントプロセス（6.1.2）に直接反映させることを求めている。</li>
+      <li><strong>NIST AI RMF 1.0 MAP 5</strong>：システムの期待される使用や過去のインシデント事例に基づいて、プラスの影響とマイナスの影響双方の可能性（Likelihood）と深刻度・規模（Magnitude）をマッピング・特定する手法を定義している。</li>
+    </ul>
+  </div>
+
+  <div class="sec" id="ch2-case">
+    <h3 class="sec-title">実務での適用例：医療画像診断支援AIにおける影響評価プロセス</h3>
+    <p>医療法人が、肺がんの早期発見を支援するための診断画像解析AIシステムを外部ベンダーから導入する際の、ガバナンス実務としての影響評価手順を以下に示す。</p>
+
+    <div class="fig">
+      <span class="fig-cap">図：医療画像診断AIにおける複合的影響評価の構造</span>
+      <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" style="height:200px; width:100%; max-width:320px;">
+        <defs>
+          <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#8b2e00"/>
+          </marker>
+        </defs>
+        <!-- Outer box: AIA/FRIA -->
+        <rect x="10" y="10" width="300" height="180" rx="6" fill="rgba(139,46,0,0.06)" stroke="#8b2e00" stroke-width="1.5"/>
+        <text x="160" y="32" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="13" font-weight="600" fill="#8b2e00">AI影響評価（AIA / FRIA）</text>
+        <text x="160" y="50" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#7a6a5a">診断の公平性・誤診時の患者健康被害・医師の技能維持</text>
+        <!-- Inner box: DPIA -->
+        <rect x="40" y="65" width="240" height="80" rx="4" fill="rgba(139,46,0,0.10)" stroke="#c0520a" stroke-width="1.2"/>
+        <text x="160" y="88" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="600" fill="#c0520a">データ保護影響評価（DPIA）</text>
+        <text x="160" y="108" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#7a6a5a">患者の遺伝情報・医療生体データの保護</text>
+        <text x="160" y="126" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#7a6a5a">GDPR 第35条 適法性・目的限定</text>
+        <!-- Label -->
+        <text x="160" y="170" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#7a6a5a">EU AI Act 第29a条 ＋ ISO 42001 Clause 6.1.4</text>
+      </svg>
+    </div>
+
+    <p>ガバナンスプロフェッショナルは、患者への身体的健康危害（誤診リスク）に加え、異なる年齢、性別、人種スライスにおける予測エラー率の不均衡（公平性リスク）、および医師がAIの推奨を過度に信じ込んで検証を怠るオートメーション・バイアス（心理的危害）を、影響評価ワークフローにおいてマッピングする。特定されたリスクへの対策として、臨床データセットによる追加の外部検証（External Validation）、および「医師による二重診断の義務付け（Human Oversight）」を決定し、そのすべての手順を影響アセスメント報告書として編纂の上、医療法人の倫理委員会および経営陣のサインオフを得て、不変の監査証跡として保存する。</p>
+  </div>
+
+  <div class="sec" id="ch2-trap">
+    <h3 class="sec-title">試験対策：よくある罠と誤解</h3>
+    <div class="callout">
+      <span class="callout-label">⚠️ DPIA と AIA/FRIA の混同に注意</span>
+      <p>AIGP試験対策における最大級の罠は、データ保護法（GDPR第35条等）が規定する「データ保護影響評価（DPIA）」と、AI特有の「AI影響評価（AIA / FRIA）」を混同することである。DPIAは「個人データの処理」に伴うプライバシー領域に特化したリスク評価を行うが、AI影響評価は個人データの枠を超え、システム自体の出力がもたらす広範な社会的ハーム（例：アルゴリズムの差別、意思決定の不透明性、言論の自由の抑圧、心理的・認知的悪影響、およびハルシネーションによる虚偽情報の流布）を評価対象としなければならない。</p>
+    </div>
+  </div>
+
+  <div class="sec" id="ch2-domain2">
+    <h3 class="sec-title">ドメインII（規制要件）との接続</h3>
+    <p>設計フェーズでの影響評価プロセスは、EU AI法第29a条が要求する「基本的権利影響評価（FRIA）」、およびGDPR第35条に基づく「プロファイリングやセンシティブデータの自動処理を伴う場合のDPIA」と深く交差している。ガバナンス専門家は、両者のエビデンス収集作業を重複させないために、共通のGRCプラットフォーム（OneTrustやCredo AIなど）を用いてフレームワーク間のクロスウォークを実装し、データリネージ、バイアス検出データ、および評価ログの保管フローを一本化するアプローチをとる。</p>
+    <div class="summary">
+      <span class="summary-title">PI 2 接続ポイント</span>
+      <ul>
+        <li>EU AI Act 第29a条 — FRIA：特定のdeployerに対し稼働前の基本的権利影響評価を義務付け</li>
+        <li>GDPR 第35条 — DPIA：プロファイリング・センシティブデータ処理に必須</li>
+        <li>NIST AI RMF MAP 5 — Likelihood × Magnitude のマッピング手法</li>
+        <li>GRCプラットフォームによるクロスウォーク実装でエビデンス収集を一本化</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CHAPTER 3 -->
+<section class="chapter" id="ch3">
+  <div class="ch-header">
+    <span class="ch-number">Performance Indicator 3</span>
+    <h2 class="ch-title">設計・構築へのポリシー、手順、ベストプラクティス、倫理的配慮の適用</h2>
+    <span class="ch-pi-badge">PI 3 — ポリシー・倫理的配慮の適用</span>
+    <p class="ch-lead">抽象的なAI倫理原則（信頼性、安全性、透明性、公平性等）を、システム要件、開発プロセスのコントロール、および工学的な設計制約へと具体的に翻訳し、実装現場に実効性のある手順として適用すること。</p>
+  </div>
+
+  <div class="sec" id="ch3-def">
+    <h3 class="sec-title">AIガバナンスにおける概念の定義</h3>
+    <p>設計および構築フェーズにおける「ポリシー、手順、ベストプラクティス、倫理的配慮の適用」とは、抽象的なAI倫理原則（信頼性、安全性、透明性、公平性等）を、システム要件、開発プロセスのコントロール、および工学的な設計制約へと具体的に翻訳し、実装現場に実効性のある手順として適用することを意味する。</p>
+  </div>
+
+  <div class="sec" id="ch3-fw">
+    <h3 class="sec-title">関連する主要フレームワークと規格</h3>
+    <p><strong>NIST AI RMF 1.0 — GOVERN 1.2</strong>は、信頼できるAIの特徴を組織のポリシー、プロセス、および日常手順に統合することを要求している。また、<strong>ISO/IEC 42001:2023 Annex A.6.1（AIシステム開発の管理ガイダンス）およびA.6.2（AIシステムライフサイクル各段階の基準）</strong>は、組織の責任あるAI開発目標を開発ライフサイクルの中に実質的な制御プロセスとして織り込むためのベストプラクティスを提示している。</p>
+  </div>
+
+  <div class="sec" id="ch3-8req">
+    <h3 class="sec-title">設計・構築フェーズにおける8つのコア要件とガバナンス統制の実務</h3>
+
+    <p class="sub-heading">A. AIの目的（Purpose of AI）の検証</p>
+    <p>AIシステムの設計プロセスを開始するにあたり、ガバナンスプロフェッショナルは、プロジェクトが組織の存在意義（パーパス）、公表されているAI倫理原則、および企業の社会的責任に合致しているかを厳格に精査する。モデルを構築する「正当なビジネス理由」と、想定される不確実性や潜在的な倫理的リスク（例：個人や社会への害）との間で、慎重なコスト・ベネフィット評価が実施されなければならない。組織の基本的な道徳基準を侵す恐れがあるプロジェクトに対しては、構想（Concept）の初期段階で開発を完全に却下する「構築しない（No-build / No-go）」という決定を下す権限が、ガバナンス委員会等の上位組織に担保されている必要がある。</p>
+
+    <p class="sub-heading">B. 要件定義（Requirements gathering）</p>
+    <p>機能的要件（パフォーマンス、レイテンシー、プラットフォームの互換性等）を定義する初期要件定義フェーズにおいて、非機能的な「ガバナンス要件」を明示的に組み込む。この要件定義プロセスには、適用される法規制、データの取扱規則（カリフォルニア州プライバシー権利法：CPRA等の「プロファイリングに関するオプトアウト権利」など）、説明可能性（Explainability）の要件、および予期されるオペレーション上の脆弱性を防ぐためのプライバシー強化技術（PETs）の実装レベルの決定が含まれる。これらはシステムエンジニアリングにおける「製品要件文書（PRD）」や「ユーザーストーリー（User Stories）」の一部として組み込まれ、開発の成功基準として正式に扱われる。</p>
+
+    <p class="sub-heading">C. アーキテクチャとモデル選定（Architecture and model selection）</p>
+    <p>データサイエンスチームが選択するアルゴリズムのアーキテクチャについて、ユースケースのリスク度合いに応じたガバナンスレビューを実施する。特に医療、雇用、与信評価といった個人の権利に重大な影響を及ぼす高リスクシステムでは、ブラックボックス化しやすい超多次元ニューラルネットワークよりも、透明性と説明性に優れた線形モデル、決定木、またはアンサンブル学習モデル（ランダムフォレスト等）を選択するか、あるいはそれらを代替的に適用するトレードオフ分析を文書化する。また、近年主流となっているジェネレーティブAI（LLM等）の統合においては、入力情報のプライバシー漏洩、幻覚（ハルシネーション）の発生頻度、および外部APIの利用に伴うサプライチェーンリスクを考慮に入れた基礎モデルの選定およびグラウンディング（RAGなど）の適用要件を設計する。</p>
+
+    <p class="sub-heading">D. 人間の監視（Human oversight）</p>
+    <p>EU AI法第14条（Human Oversight）に準拠し、本番配備後の人間とAIの相互作用（Human-AI Teaming / Human-AI Configuration）において、人間が適切に監視、制御、および上書きできるヒューマン・マシン・インターフェースの設計制約を構築する。</p>
+    <ul class="body-list">
+      <li><strong>認知バイアスの抑制</strong>：ユーザーがシステムの自動判定結果を無批判に信じるオートメーション・バイアスを防止するため、UI上でAIの判定を「単なる予測確率としての推奨」として表示し、オペレーターが能動的に思考して確認を怠らないようダッシュボードを設計する。</li>
+      <li><strong>緊急停止と上書き（Override/Interrupt）</strong>：システムに致命的なエラーや異常、または想定外の挙動（アノマリー）を検知した場合に、自動処理を即座に手動モードへと切り替え、システムを安全に停止・リセットさせる「ストップボタン」をシステム設計の一部として物理的に組み込む。</li>
+    </ul>
+
+    <p class="sub-heading">E. データ分析（Data analysis）</p>
+    <p>データのモデリングや学習段階に入る前に、インプットされるトレーニング、バリデーション、およびテストデータセットの品質および公平性特性を多角的に分析する。</p>
+    <ul class="body-list">
+      <li><strong>データの由来と系統（Data Provenance / Data Lineage）</strong>：データのソース、アノテーション（ラベリング）のプロセス、およびデータ準備（Data preparation）の変換処理を検証する。</li>
+      <li><strong>データの代表性（Representativeness）と正確性</strong>：特定の人種、性別、国籍などの人口統計学的スライスについてデータに不均衡（Data Imbalance）が存在しないか、また過去の差別の歴史を再学習するラベル付きデータが含まれていないかを、記述統計学的アプローチを用いて分析する。</li>
+    </ul>
+
+    <p class="sub-heading">F. 指標と閾値の評価（Metric and threshold evaluation）</p>
+    <p>モデルの性能と公平性を同時に測定するための、事前定義された定量的評価指標（Evaluation Metrics）および「許容される閾値（Acceptable Thresholds）」を設定する。モデル全体の評価（Accuracy、AUC、F1スコア等）にとどまらず、母集団をdemographic subgroupsに細分化した、いわゆるdisaggregated evaluationを設計する。例えば、偽陽性率（False Positive Rate）や偽陰性率（False Negative Rate）が、異なるグループ間で一定比率（例：80%ルール等）を超えて乖離しないよう、数学的な公平性（Fairness）の閾値を設定し、これに達しない場合の自動リリース停止（ゲートウェイ）手順を定義する。</p>
+
+    <p class="sub-heading">G. ステークホルダーとの対話（Stakeholder engagement and feedback）</p>
+    <p>設計プロセス全体にわたって「参加型AI（Participatory AI）」の手法を適用する。社内の開発チーム（データサイエンティストやエンジニア等）から独立した外部の有識者（倫理学者、社会科学者、ドメインエキスパート等）、ユーザー（現場オペレーター）、さらにAIシステムの影響を受ける潜在的な当事者コミュニティ（障害者グループやマイノリティを代表する民間団体等）を要件定義の初期段階から巻き込み、広範なフィードバックを収集する。これにより、開発プロセス特有の「確証バイアス」や「グループシンク（集団思考）」によるリスクの見落としを防ぐことができる。</p>
+
+    <p class="sub-heading">H. 運用管理（Operational controls）</p>
+    <p>設計・構築中の開発活動を客観的に検証するための実務的な統制（コントロール）を敷く。</p>
+    <ul class="body-list">
+      <li><strong>三つの防衛線（Three Lines of Defense）</strong>：第1線（開発推進部門によるセルフチェックとテスト）、第2線（法務、プライバシ、ガバナンス責任者による第2者レビューとリリース可否評価）、第3線（独立した内部監査室や外部評価機関による第3者検証）という管理構造を、開発に入る前に明確に策定する。</li>
+      <li><strong>技術的なアクセス・セキュリティ制御</strong>：構築環境へのアクセス制限、トレーニング・検証データの機密性および暗号化、データポイズニング（データ汚染攻撃）やモデル逆転・抽出といったAI特有のセキュリティ脅威に対応するための境界型ガードレールの仕組みをシステム設計に統合する。</li>
+    </ul>
+  </div>
+
+  <div class="sec" id="ch3-trap">
+    <h3 class="sec-title">試験対策：よくある罠と誤解</h3>
+    <div class="callout">
+      <span class="callout-label">⚠️ ロールの混同に注意</span>
+      <p>AIGP試験においては、ロールの混同（データサイエンティスト／エンジニア vs. AIガバナンスプロフェッショナル）が極めて狙われやすい。試験問題で「開発中にバイアス検知ツールのコードを実装し、ハイパーパラメータを調整して最適なアルゴリズムを作成することはガバナンスプロフェッショナルの仕事である」という主旨の記述があれば、それは「誤り」である。コードの実装、モデルの学習、およびシステムの直接ビルドはデータサイエンティストやエンジニア（AI Developers）の役割である。ガバナンス専門家の役割は、「責任あるAIの目標（ポリシー）を定義し、それを開発要件に落とし込み、開発チームが手順を遵守しているかをレビュー・監査して、最終リリースを承認するか却下するかの管理プロセスを指揮すること」である。</p>
+    </div>
+  </div>
+
+  <div class="sec" id="ch3-domain2">
+    <h3 class="sec-title">ドメインII（規制要件）との接続</h3>
+    <p>設計・構築フェーズにおけるこれら8つの取り組みは、EU AI Act 第III章（高リスクAIシステム向け要件）の第9条〜15条を実際に実装する技術プロセスに直結している。また、ISO/IEC 42001の認証要件（Clause 8.1 運用の計画及び管理、Annex A.6.1、A.6.2）を満たす実質的な証跡となるため、ドメインIIの標準規格の遵守を証明するための根幹となる。</p>
+    <div class="summary">
+      <span class="summary-title">PI 3 接続ポイント</span>
+      <ul>
+        <li>EU AI Act 第9〜15条 — 高リスクAIシステム向け要件の具体的な実装プロセス</li>
+        <li>NIST AI RMF GOVERN 1.2 — 信頼できるAIの特徴をポリシー・手順に統合</li>
+        <li>ISO/IEC 42001 Annex A.6.1 / A.6.2 — 開発ライフサイクル各段階のガバナンス基準</li>
+        <li>ガバナンス専門家の役割はポリシー定義・レビュー・承認プロセスの指揮であり、コード実装ではない</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CHAPTER 4 -->
+<section class="chapter" id="ch4">
+  <div class="ch-header">
+    <span class="ch-number">Performance Indicator 4</span>
+    <h2 class="ch-title">設計・構築における内部および外部リスクの特定と管理</h2>
+    <span class="ch-pi-badge">PI 4 — リスクの特定と管理</span>
+    <p class="ch-lead">AIシステムに固有の確率的性質（推論の不確実性、入力データのドリフト、ブラックボックス性）から生じる想定されるまたは予期せぬ不利益・危害（ハーム）を事前に識別し、組織の「リスク許容度（Risk Tolerance）」に基づいて対処・削減・受容するための構造的アプローチ。</p>
+  </div>
+
+  <div class="sec" id="ch4-def">
+    <h3 class="sec-title">AIガバナンスにおける概念の定義</h3>
+    <p>AIの設計・構築段階における「内部および外部リスクの特定と管理」とは、AIシステムに固有の確率的性質（推論の不確実性、入力データのドリフト、およびブラックボックス性）から生じる想定される、または予期せぬ不利益・危害（ハーム）を事前に識別し、組織の「リスク許容度（Risk Tolerance）」に基づいて対処、削減、または受容するための構造的なアプローチを指す。</p>
+  </div>
+
+  <div class="sec" id="ch4-fw">
+    <h3 class="sec-title">関連する主要フレームワークと規格</h3>
+    <ul class="body-list">
+      <li><strong>NIST AI RMF 1.0 — GOVERN 1.3</strong>：組織のリスク許容度に基づく管理活動の確立を求めており、<strong>MEASURE 2.5</strong>はモデルの信頼性や限界、およびバリアンス（ばらつき）を検証することを求めている。</li>
+      <li><strong>EU AI Act 第9条（リスク管理システム）</strong>：高リスクAIシステムに対して、「設計・開発から市場投入、そして市後監視に至る、ライフサイクル全体を並行して回る定期的かつ継続的なリスク管理プロセス」を維持・文書化することを義務付けている。</li>
+      <li><strong>ISO/IEC 42001 Clause 6.1.2（AIリスクアセスメント）および6.1.3（AIリスク対応）</strong>：組織のビジネス、セキュリティ、プライバシー、および安全を脅かすAI固有のリスクの識別・対応手順を確立することを要求している。</li>
+    </ul>
+  </div>
+
+  <div class="sec" id="ch4-tools">
+    <h3 class="sec-title">リスク管理実務を支える6つのコアツールとガバナンスへの適用</h3>
+
+    <p class="sub-heading">A. 発生確率・深刻度危害マトリクス（Probability/Severity Harms Matrix）</p>
+    <p>AIリスクを定量化およびプロットするための基本フレームワーク。危害（Harms）の対象を「個人（基本的権利・プライバシー、安全・健康、経済的機会）」「グループ（バイアス、サブグループ差別、排除）」「組織（法的処罰、財務損失、ブランド損傷）」「社会および地球環境（民主主義プロセスの破壊、労働市場の混乱、計算資源消費に伴う地球環境負荷）」の4軸に分類し、それぞれについて危害が発生する「確率（Probability / Likelihood）」と「影響の深刻度（Severity / Magnitude）」を乗算、または定性的に評価する。</p>
+
+    <div class="fig">
+      <span class="fig-cap">図：発生確率・深刻度危害マトリクス（RAGスケール可視化）</span>
+      <svg viewBox="0 0 320 230" xmlns="http://www.w3.org/2000/svg" style="height:230px; width:100%; max-width:320px;">
+        <!-- Y axis label -->
+        <text x="14" y="120" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" fill="#7a6a5a" transform="rotate(-90,14,120)">深刻度 →</text>
+        <!-- X axis label -->
+        <text x="185" y="222" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" fill="#7a6a5a">発生確率 →</text>
+        <!-- Grid cells -->
+        <!-- Row 3 (high severity) -->
+        <rect x="35" y="20" width="70" height="60" fill="rgba(255,180,0,0.25)" stroke="rgba(90,70,50,0.15)" stroke-width="1"/>
+        <rect x="105" y="20" width="70" height="60" fill="rgba(220,60,0,0.20)" stroke="rgba(90,70,50,0.15)" stroke-width="1"/>
+        <rect x="175" y="20" width="70" height="60" fill="rgba(180,20,0,0.22)" stroke="rgba(90,70,50,0.15)" stroke-width="1"/>
+        <!-- Row 2 (mid severity) -->
+        <rect x="35" y="80" width="70" height="60" fill="rgba(0,160,60,0.15)" stroke="rgba(90,70,50,0.15)" stroke-width="1"/>
+        <rect x="105" y="80" width="70" height="60" fill="rgba(255,180,0,0.25)" stroke="rgba(90,70,50,0.15)" stroke-width="1"/>
+        <rect x="175" y="80" width="70" height="60" fill="rgba(220,60,0,0.20)" stroke="rgba(90,70,50,0.15)" stroke-width="1"/>
+        <!-- Row 1 (low severity) -->
+        <rect x="35" y="140" width="70" height="60" fill="rgba(0,160,60,0.15)" stroke="rgba(90,70,50,0.15)" stroke-width="1"/>
+        <rect x="105" y="140" width="70" height="60" fill="rgba(0,160,60,0.15)" stroke="rgba(90,70,50,0.15)" stroke-width="1"/>
+        <rect x="175" y="140" width="70" height="60" fill="rgba(255,180,0,0.25)" stroke="rgba(90,70,50,0.15)" stroke-width="1"/>
+        <!-- Cell labels -->
+        <text x="70" y="52" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#7a6a5a">中リスク</text>
+        <text x="140" y="52" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#8b2e00">高リスク</text>
+        <text x="210" y="52" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#8b2e00">最高リスク</text>
+        <text x="70" y="112" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#2d8a4e">低リスク</text>
+        <text x="140" y="112" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#7a6a5a">中リスク</text>
+        <text x="210" y="112" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#8b2e00">高リスク</text>
+        <text x="70" y="172" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#2d8a4e">低リスク</text>
+        <text x="140" y="172" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#2d8a4e">低リスク</text>
+        <text x="210" y="172" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#7a6a5a">中リスク</text>
+        <!-- Axis ticks -->
+        <text x="70" y="210" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" fill="#7a6a5a">低</text>
+        <text x="140" y="210" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" fill="#7a6a5a">中</text>
+        <text x="210" y="210" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" fill="#7a6a5a">高</text>
+        <text x="28" y="52" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" fill="#7a6a5a">高</text>
+        <text x="28" y="112" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" fill="#7a6a5a">中</text>
+        <text x="28" y="172" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" fill="#7a6a5a">低</text>
+      </svg>
+    </div>
+
+    <p>このスコアを、赤・黄・緑のシグナル（RAGスケール）で可視化されたリスクテーブル上にプロットし、高難度のリスク領域に対して、限られたガバナンスリソース（独立検証人や計算資源等）を重点配分する意思決定の判断基準とする。</p>
+
+    <p class="sub-heading">B. リスク低減階層（Risk Mitigation Hierarchy）</p>
+    <p>特定されたリスクに対処する際の、工学的な優先アプローチ。EU AI法（第9条第5項）や製品安全設計の原則に完全に準拠し、以下の3ステップの優先順に沿って対策を設計する。</p>
+    <ul class="body-list">
+      <li><strong>ステップ1 — 設計および開発による排除または最小化（By Design）</strong>：差別バイアスの温床となる特徴量や不必要なセンシティブ属性（例：郵便番号や人種に相関する属性データ）の自発的な削除、または根本的なAIアーキテクチャの変更</li>
+      <li><strong>ステップ2 — 技術的および運用的コントロールの実装（Technical/Operational Controls）</strong>：入出力情報を検閲するフィルタリング（ガードレール）の適用、ハルシネーション（幻覚）を検知してシステムを安全に停止させる技術、APIレイヤーでのセキュリティ検証、アクセス制御</li>
+      <li><strong>ステップ3 — 情報提供と教育・訓練（Information and Training）</strong>：ユーザーマニュアル（Instructions for use）での注意喚起、AI出力結果の脇に表示する「エラーの可能性に関する注意表記」、ハルシネーションを見落とさないためのデプロイヤーやオペレーター向けトレーニング</li>
+    </ul>
+
+    <div class="fig">
+      <span class="fig-cap">図：リスク低減階層（Risk Mitigation Hierarchy）の意思決定フロー</span>
+      <svg viewBox="0 0 320 290" xmlns="http://www.w3.org/2000/svg" style="height:290px; width:100%; max-width:320px;">
+        <defs>
+          <marker id="arr3" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="#8b2e00"/>
+          </marker>
+        </defs>
+        <!-- Start node -->
+        <rect x="90" y="10" width="140" height="32" rx="16" fill="rgba(139,46,0,0.12)" stroke="#8b2e00" stroke-width="1.5"/>
+        <text x="160" y="30" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="12" font-weight="600" fill="#8b2e00">特定されたAIリスク</text>
+        <!-- Arrow down -->
+        <line x1="160" y1="42" x2="160" y2="58" stroke="#8b2e00" stroke-width="1.5" marker-end="url(#arr3)"/>
+        <!-- Step 1 box -->
+        <rect x="30" y="60" width="260" height="36" rx="4" fill="rgba(139,46,0,0.08)" stroke="#8b2e00" stroke-width="1.2"/>
+        <text x="160" y="82" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="12" font-weight="600" fill="#8b2e00">ステップ1：設計による排除（By Design）</text>
+        <!-- Decision -->
+        <text x="255" y="108" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#7a6a5a">実現可能?</text>
+        <line x1="290" y1="96" x2="290" y2="118" stroke="#7a6a5a" stroke-width="1" stroke-dasharray="4,2"/>
+        <line x1="255" y1="118" x2="295" y2="118" stroke="#7a6a5a" stroke-width="1" stroke-dasharray="4,2"/>
+        <!-- Yes branch arrow right -->
+        <text x="300" y="128" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#2d8a4e">→ リスク排除の実行</text>
+        <!-- Arrow down -->
+        <line x1="100" y1="96" x2="100" y2="128" stroke="#8b2e00" stroke-width="1.5" marker-end="url(#arr3)"/>
+        <text x="83" y="112" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#7a6a5a">いいえ</text>
+        <!-- Step 2 box -->
+        <rect x="30" y="130" width="260" height="36" rx="4" fill="rgba(192,82,10,0.08)" stroke="#c0520a" stroke-width="1.2"/>
+        <text x="160" y="148" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" font-weight="600" fill="#c0520a">ステップ2：技術的・運用的コントロール</text>
+        <text x="160" y="162" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#c0520a">（ガードレール実装）</text>
+        <!-- Arrow down -->
+        <line x1="100" y1="168" x2="100" y2="198" stroke="#8b2e00" stroke-width="1.5" marker-end="url(#arr3)"/>
+        <text x="83" y="184" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#7a6a5a">いいえ</text>
+        <!-- Step 3 box -->
+        <rect x="30" y="200" width="260" height="50" rx="4" fill="rgba(0,100,160,0.07)" stroke="#2d8a4e" stroke-width="1.2"/>
+        <text x="160" y="220" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" font-weight="600" fill="#2d8a4e">ステップ3：情報提供・警告・トレーニング</text>
+        <text x="160" y="236" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#2d8a4e">（取扱説明書・UI警告・研修プログラム）</text>
+        <!-- Residual risk -->
+        <text x="160" y="268" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" fill="#8b2e00">↓ 残余リスク（Residual Risk）を文書化</text>
+        <text x="160" y="284" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="11" fill="#7a6a5a">経営陣・CROによるSign-off</text>
+      </svg>
+    </div>
+
+    <p class="sub-heading">C. ステークホルダーマッピング（Stakeholder Mapping）</p>
+    <p>AIが及ぼす複雑な影響を可視化するための手法。開発部門のみならず、AIの「運用者（Practitioner / Operator）」、AIの出力によって融資や採用を判断される「影響を受ける当事者（Affected Individuals）」、さらに個人データの収集にさらされるデータ主体をチャート化し、その全員の異なる利益や懸念事項を特定する。特に、歴史的に排除されてきたマイノリティや子供などの「脆弱なステークホルダー」への影響を設計段階で特定し、彼らの声を要件に反映させるための対話の経路を確保する。</p>
+
+    <p class="sub-heading">D. ユースケース評価（Use-case evaluation）</p>
+    <p>AIモデルが「当初の設計目的（Intended Purpose）」を逸脱して別の高リスクコンテキストで利用されるリスク（Off-label use）、およびハッカーや悪意あるエンドユーザーによってハームを意図して操作されるリスク（Abuse / Misuse）を評価する。例えば、自社製チャットボットが顧客に有害情報を出力するリスクに対し、設計側でクエリの「入力・出力監視」および「不適切な応答の拒否ポリシー（Refusal Policies）」を定義する。</p>
+
+    <p class="sub-heading">E. ベンチマーキング（Benchmarking）</p>
+    <p>外部環境における技術的成熟度と比較した相対的リスク評価。業界標準として実証された標準ベンチマークテストやテストセットを使用し、自社AIモデルの正確性、バイアスの乖離率、およびロバストネスを測定する。これにより、モデルがパブリックな指標に対して劣っていないか、自社の「リスク許容度」の上限を超えていないかを配備前に客観評価する。</p>
+
+    <p class="sub-heading">F. 配備前パイロットとテスト（Pre-deployment pilots and testing）</p>
+    <p>本番環境での稼働に踏み切る前に、隔離された検証空間（AI Sandboxes等）や、内部組織の限られたグループ（または特定のロケーション）にシステムをテスト展開（限定配備）し、実際の業務フローにおける推論精度を定量的および定性的にテストする。ラボ内の単一データ評価テストでは検出できなかった、実世界の入力データ特有のノイズによる「コンセプトドリフト（Concept Drift）」や、オペレーターの思い込み（Automation bias / selective adherence）といった人間側の行動に由来する脆弱性を実証・検知し、設計の本質的な欠陥をリリース前に修正する。</p>
+  </div>
+
+  <div class="sec" id="ch4-trap">
+    <h3 class="sec-title">試験対策：よくある罠と誤解</h3>
+    <div class="callout">
+      <span class="callout-label">⚠️ 「リスクゼロ」という幻想に注意</span>
+      <p>AIガバナンスにおけるリスク管理の目標は、すべてのリスクを「100%完全に排除すること」ではない。AIは確率論（Probabilistic）に基づいて予測を出力するため、本質的に不確実性を伴う。AIGP試験においては、「検証テストによりリスクがゼロであることが実証されなければモデルをリリースしてはならない」という主旨の記述は「誤り」である。プロフェッショナルが担うべき真の役割は、あらゆる適切なコントロールを適用した上で、なお残存する不確実性＝「残余リスク（Residual Risk）」を正確にマッピングして文書化し、組織のリスク管理委員会やChief Risk Officer（CRO）などのしかるべき責任権限を持つ管理者にその内容を受け入れ（Sign-off）させるための、合理的で説明可能なプロセスを担保することである。</p>
+    </div>
+  </div>
+
+  <div class="sec" id="ch4-domain2">
+    <h3 class="sec-title">ドメインII（規制要件）との接続</h3>
+    <p>これらの一連のリスク特定と低減は、EU AI Act 第9条（リスク管理システム）が義務付ける要件そのものである。また、ISO/IEC 42001の Clause 8.2（AIリスクアセスメント）および8.3（AIリスク対応）の認証監査項目とも完全に一致するため、標準規格の要件を満たす上での核となる活動である。</p>
+    <div class="summary">
+      <span class="summary-title">PI 4 接続ポイント</span>
+      <ul>
+        <li>EU AI Act 第9条 — リスク管理システム：ライフサイクル全体を通じた継続的プロセスを義務付け</li>
+        <li>NIST AI RMF GOVERN 1.3 / MEASURE 2.5 — リスク許容度に基づく管理とモデル信頼性の検証</li>
+        <li>ISO/IEC 42001 Clause 6.1.2 / 6.1.3 — AIリスクアセスメントと対応手順</li>
+        <li>残余リスクは排除不能であり、文書化してCROのSign-offを取得することが必須</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CHAPTER 5 -->
+<section class="chapter" id="ch5">
+  <div class="ch-header">
+    <span class="ch-number">Performance Indicator 5</span>
+    <h2 class="ch-title">コンプライアンスとリスク管理のための設計・構築プロセスの文書化</h2>
+    <span class="ch-pi-badge">PI 5 — プロセスの文書化</span>
+    <p class="ch-lead">AIシステムの企画から開発・リスク管理に至る一連の知的決定を、再現可能かつ追跡可能（Traceable）な不変の監査証跡（Audit Trail）として記録・保持するプロセス。組織の外部監査、適合性評価、法的紛争、およびインシデント発生時における説明責任と法的抗弁権を担保するための基盤インフラ。</p>
+  </div>
+
+  <div class="sec" id="ch5-def">
+    <h3 class="sec-title">AIガバナンスにおける概念の定義</h3>
+    <p>AIの設計および構築フェーズにおける「文書化（Documentation）」とは、AIシステムの企画、要件定義、アーキテクチャ選定、データ準備、バイアス評価、およびリスク管理プロセスに至る一連の知的決定を、再現可能かつ追跡可能（Traceable）な不変の監査証跡（Audit Trail）としてシステム的かつ秩序立って記録・保持するプロセスを指す。これは、組織の外部監査、適合性評価、法的紛争、およびインシデント（事故）発生時における、組織的な説明責任（Accountability）および法的抗弁権（Defensibility）を担保するための、AIガバナンスにおける基盤インフラである。</p>
+  </div>
+
+  <div class="sec" id="ch5-fw">
+    <h3 class="sec-title">関連する主要フレームワークと規格</h3>
+    <ul class="body-list">
+      <li><strong>EU AI Act 第11条 / Annex IV（技術文書）</strong>：高リスクAIシステムが市場に展開される前に、プロバイダーが作成・保持しなければならない、システムのライフサイクル、アーキテクチャ、設計選択、検証方法を網羅した詳細な「技術文書（Technical Documentation）」の仕様を規定している。</li>
+      <li><strong>ISO/IEC 42001:2023 Clause 7.5（文書化された情報）/ Annex A.6.2.3 / A.6.2.7</strong>：AIマネジメントシステムの計画および運用のために必要不可欠な文書および記録の作成、版管理、保護、および適切な期間にわたる保管を義務付けている。</li>
+      <li><strong>データシート（Datasheets for Datasets）</strong>：Timnit Gebruらによって提唱され、データセットの全系統（Provenance）、収集目的、組成、およびGDPR等における適法性を開示するための、業界における事実上のデータ記録標準規格である。</li>
+      <li><strong>モデルカード（Model Cards for Model Reporting）</strong>：Margaret Mitchellらによって提唱され、学習済みAIモデルの性能、限界、意図された用途、および公平性テストの数値をオープンかつ簡潔に開示するための業界ドキュメント標準である。</li>
+    </ul>
+  </div>
+
+  <div class="sec" id="ch5-case">
+    <h3 class="sec-title">実務での適用例：AI技術スタック全体の文書管理構造の確立</h3>
+    <p>ある企業において、顧客の転職志望度を予測するAIモデル（TalentMatchおよびPathFinder）を開発・統合するにあたり、ガバナンス管理者が構築した「カード型多階層文書システム（多重アセスメント構造）」の実務を提示する。</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>文書化オブジェクト</th>
+            <th>ガバナンス上で作成・保持される具体的な成果物</th>
+            <th>該当する法的・国際規格要件</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>モデル仕様（Model Card）</td>
+            <td>TalentMatchモデルカード：最適化対象、選択されたニューラルネットワーク構造、異なる人種・性別別の予測誤差（FPR/FNR）、残余リスク</td>
+            <td>EU AI Act 第11条（Annex IV 2.(c)）、ISO 42001 A.6.2.3</td>
+          </tr>
+          <tr>
+            <td>データ仕様（Datasheet）</td>
+            <td>トレーニング・テストデータのデータシート：データの収集元（アグリゲーター）、アノテーション手順（ラベリング方法）、バイアス検知テストログ、DPIAとのクロス対応</td>
+            <td>EU AI Act 第10条、第11条（Annex IV 2.(d)）、ISO 42001 A.7.2</td>
+          </tr>
+          <tr>
+            <td>インターフェース（Interface Card）</td>
+            <td>UI/UX仕様書：顧客への提示画面の透明性設計、オートメーション・バイアスを軽減するための注意ポップアップの実装、オペレーター用上書きボタンの制御定義</td>
+            <td>EU AI Act 第13条（透明性）、第14条（人間の監視）</td>
+          </tr>
+          <tr>
+            <td>エージェント・アクション（Agent Card）</td>
+            <td>自律エージェント行動ポリシー：AIによる転職オファーの自動送信がもたらす下流の行動範囲の境界定義、手動チェックのトリガー基準</td>
+            <td>ISO 42001 Clause 8.1（プロセスの管理基準）</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>ガバナンス管理者は、これらの文書ファイル（不変のマークダウンパッケージ）をGRCプラットフォーム上で開発モデルの「固有ID」および学習データの「バージョンタグ」と一元的に紐付け、誰が、いつ、どのような評価結果を基にシステムリリースを承認したか（証跡追跡性：Audit Trail）を不変的に記録する。</p>
+  </div>
+
+  <div class="sec" id="ch5-trap">
+    <h3 class="sec-title">試験対策：よくある罠と誤解</h3>
+    <div class="callout">
+      <span class="callout-label">⚠️ 文書化の役割分担を誤解しない</span>
+      <p>AIGP試験対策における重要な誤解は、「文書化は弁護士やガバナンスプロフェッショナル自身がゼロから書き、開発完了後にまとめて作成するものである」という考え方である。これは完全に「誤り」である。モデルカードやデータセットの仕様（Datasheets）などの詳細な技術仕様を実際に入力・記述するのは、構築フェーズの当事者であるデータサイエンティストや機械学習エンジニアである。ガバナンスプロフェッショナルの本来の役割は、「文書化が標準化され、開発開始時から自動的かつ反復的にデータが蓄積されるための『文書化テンプレート、ポリシー、およびライフサイクル統合プロセス』を組織に整備し、監査人やレギュレーターに提出可能な状態にレビュー・維持すること」である。</p>
+    </div>
+  </div>
+
+  <div class="sec" id="ch5-domain2">
+    <h3 class="sec-title">ドメインII（規制要件）との接続</h3>
+    <p>EU AI Act 第11条に基づき、高リスクAIを市場に提供する前にAnnex IVを満たす技術文書の編纂が法的に強制される。また、同法第18条および19条により、このドキュメントおよびシステム自動記録ログは、市場展開後「最低10年間」にわたって保持され、規制当局への提供義務を伴う。これは、ISO 42001（Clause 7.5: 文書化された情報の管理）が要求する「不変の記録保存ポリシー」とも完全に一致し、企業が民事訴訟（製造物責任訴訟等）に直面した際の防御手段として機能する。</p>
+    <div class="summary">
+      <span class="summary-title">PI 5 接続ポイント</span>
+      <ul>
+        <li>EU AI Act 第11条 / Annex IV — 高リスクAI展開前の技術文書作成・保持を法的に強制</li>
+        <li>EU AI Act 第18・19条 — 展開後最低10年間の文書保持と規制当局への提供義務</li>
+        <li>ISO/IEC 42001 Clause 7.5 — 文書化された情報の作成・版管理・保護・保管を義務付け</li>
+        <li>Model Cards（Mitchell他）およびDatasheets for Datasets（Gebru他）が業界標準</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- APPENDIX: GLOSSARY -->
+<div id="appendix">
+  <section id="glossary">
+    <h2 class="appendix-title">重要用語解説（Glossary）</h2>
+
+    <div class="glossary-item">
+      <div class="glossary-term">ビジネスコンテキスト（Business Context）</div>
+      <div class="glossary-def">AIシステムが適用される固有の業務環境、意図されたユーザー、影響を受けるステークホルダー、および組織の使命・アライメント。リスク分類や評価のすべての出発点となる。</div>
+    </div>
+
+    <div class="glossary-item">
+      <div class="glossary-term">基本的権利影響評価（FRIA: Fundamental Rights Impact Assessment）</div>
+      <div class="glossary-def">AIシステムが人権、プライバシー、差別、環境、および社会的プロセスに及ぼす影響を予測し、低減策を文書化するためのアセスメント。EU AI Act 第29a条で特定の組織（公共機関・金融機関等）に義務付けられている。</div>
+    </div>
+
+    <div class="glossary-item">
+      <div class="glossary-term">残余リスク（Residual Risk）</div>
+      <div class="glossary-def">開発や設計、運用のガバナンスコントロール（リスク低減措置）を適用した後に、なおシステムに排除されずに残存する不確実性やリスク。ガバナンス推進において、経営陣による明示的な承認（Sign-off）が必要とされる。</div>
+    </div>
+
+    <div class="glossary-item">
+      <div class="glossary-term">オートメーション・バイアス（Automation Bias）</div>
+      <div class="glossary-def">AIなどの自動化システムの推奨出力を盲信し、人間のオペレーターが自身の独自の臨床的・専門的判断や批判的検証を放棄して、AIに過度に依存してしまう認知的な心理現象。EU AI法第14条（Human Oversight）の設計要件はこのバイアスの防止を目的の一つとする。</div>
+    </div>
+
+    <div class="glossary-item">
+      <div class="glossary-term">モデルカード（Model Cards）</div>
+      <div class="glossary-def">機械学習モデルのバージョン、アーキテクチャ、想定外の使用目的、人口統計学的スライス別の評価結果、およびハームへの配慮事項を、利害関係者に透明性高く開示するための1〜2ページの業界標準ドキュメント仕様（Margaret Mitchellらによって提唱）。</div>
+    </div>
+
+    <div class="glossary-item">
+      <div class="glossary-term">データシート（Datasheets for Datasets）</div>
+      <div class="glossary-def">モデル学習やテストに用いられるデータセットの作成動機、構成要素、ノイズの有無、個人を特定できる機密情報の処理、およびアノテーション履歴を開示するための業界標準データドキュメンテーション規格（Timnit Gebruらによって提唱）。</div>
+    </div>
+
+    <div class="glossary-item">
+      <div class="glossary-term">リスク低減階層（Risk Mitigation Hierarchy）</div>
+      <div class="glossary-def">AIのリスクを効果的に低減するために適用される優先順位。1. 設計による排除（By Design）、2. 技術的・運用的ガードレール（Technical/Operational Controls）、3. 取扱説明書・警告・教育の適用（Information and Training）の3段階からなる。EU AI Act 第9条第5項に準拠。</div>
+    </div>
+
+    <div class="glossary-item">
+      <div class="glossary-term">適合性評価（Conformity Assessment）</div>
+      <div class="glossary-def">高リスクAIシステムが市場に展開される前に、適用される法（EU AI法）や標準規格（ISO 42001）が定める技術要件や品質基準を完全に満たしているかを、自己宣言または第三者機関（Notified Body）が評価し実証する正式なコンプライアンスプロセス。</div>
+    </div>
+
+    <div class="glossary-item">
+      <div class="glossary-term">Disaggregated Evaluation（細分化評価）</div>
+      <div class="glossary-def">モデルの性能をサンプル全体だけでなく、性別・人種・年齢層などの人口統計学的サブグループに細分化して評価する手法。特定グループに対する偽陽性率・偽陰性率の乖離（公平性の不均衡）を検出するために用いられる。</div>
+    </div>
+
+    <div class="glossary-item">
+      <div class="glossary-term">三つの防衛線（Three Lines of Defense）</div>
+      <div class="glossary-def">リスク管理における組織構造フレームワーク。第1線（開発推進部門によるセルフチェック）、第2線（法務・プライバシー・ガバナンス責任者による独立レビュー）、第3線（内部監査室・外部評価機関による第三者検証）の3層構造。</div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" style="margin-top: 56px;">
+    <h2 class="appendix-title">シナリオベースの模擬試験問題（5問）</h2>
+
+    <div class="quiz-item">
+      <span class="quiz-header">問題 1 — ビジネスコンテキストとユースケースの定義（PI 1）</span>
+      <p class="quiz-q">多国籍人事サービスを提供する企業において、求職者の自己PR動画から「好感度（Likeability）」や「就業適性（Employability）」をAIモデルで解析・採点し、採用企業の一次選考を全自動で支援するシステムの開発プロジェクトが企画された。この状況において、AIガバナンスプロフェッショナルが「設計前」にビジネスコンテキスト評価として取るべき行動として、最も適切なものはどれか？</p>
+      <div class="quiz-options">
+        <span class="quiz-option">A. 技術仕様書に基づき、画像解析アルゴリズムが最新のニューラルネットワーク構造で学習されることをデータサイエンスチームに確認し、ただちに開発のサインオフを出す。</span>
+        <span class="quiz-option correct">B. システムの意図された用途、限界、および影響を受ける人口統計学的スライスを特定するとともに、「好感度」や「適性」といった直接計測できない社会的概念をAIモデルで定量化しようとする試み自体について、科学的整合性（科学的妥当性と構成概念妥当性）を検証し、代替の非AI手法の有用性を比較した初期評価書を編纂する。</span>
+        <span class="quiz-option">C. 開発コストを抑えるため、オープンソースで公開されている「表情解析学習モデル」をそのまま採用し、自社でビジネスコンテキストや用途限界を新たに文書化するプロセスを全面的に省略する。</span>
+        <span class="quiz-option">D. 自社の審査システムは契約企業の社内（Intranet）でのみ閉じて運用されるため、いかなるステークホルダーマッピングも実施せず、求職者への透明性通知は行わないと決定する。</span>
+      </div>
+      <span class="quiz-answer">✓ 正解：B</span>
+      <div class="quiz-explain">AIガバナンスプロフェッショナルの極めて重要な義務の一つは、開発開始前に「ビジネスコンテキスト、ユースケース、およびその科学的整合性・構成概念妥当性（Construct Validity）」を客観的に評価することである。特に「好感度」などの直接観測できない概念（無形構成概念）をプロキシ（代替指標）を介してAIに学習・測定させるプロセスは、差別や不当な誤診、歴史的偏見の再学習リスクを著しく孕むため、科学的妥当性の十分な検討と、非AIアプローチとの比較検討（MAP 1.1、1.6、2.3）が要請される。A、C、Dは、高リスクシステムに対して実質的なガバナンス義務を放棄した判断であるため完全に誤りである。</div>
+    </div>
+
+    <div class="quiz-item">
+      <span class="quiz-header">問題 2 — 影響評価の実施とレビュー（PI 2）</span>
+      <p class="quiz-q">大手の小売銀行において、クレジットカード発行審査を完全に自動化するためのAI決定モデルが設計・テストされた。開発中の影響評価（Impact Assessment）の実施とレビューをリードするガバナンスプロフェッショナルの役割として、誤っている（最も不適切な）ものはどれか？</p>
+      <div class="quiz-options">
+        <span class="quiz-option">A. AIシステムの判断が、個人の金銭的・生活的自律性、不当な与信排除（バイアス差別）、およびプライバシーに与える影響評価を、開発ライフサイクルの開始時、および大幅なシステム変更時に実行する。</span>
+        <span class="quiz-option">B. 個人データの処理リスクを評価するための「データ保護影響評価（DPIA）」の提出要件を確認すると同時に、AIが出力する決定そのものが及ぼす非プライバシーリスク（例：不公平な融資不承認率などの社会的ハーム）に対する「AI影響評価（AIA）」の双方を調整・レビューする。</span>
+        <span class="quiz-option correct">C. モデルの「適合度（F1スコア）」および「損失関数」などのプログラミングのバグをデバッグするために、モデルのコードを直接書き換え、学習パラメータの最適な技術設計数値を調整・修正する。</span>
+        <span class="quiz-option">D. 影響アセスメント結果に基づき、開発された自動審査の不確実性が許容上限（リスク許容度）を超える場合に、人間による最終上席レビュー（Human Oversight）の手順を配備要件として設計に組み込ませる。</span>
+      </div>
+      <span class="quiz-answer">✓ 正解：C（最も不適切なもの）</span>
+      <div class="quiz-explain">Cは機械学習エンジニアまたはデータサイエンティスト（AI Developers）の直接的な技術的役割であり、ガバナンスプロフェッショナルの統制上の役割（ポリシー適合性のレビュー、テスト閾値の監査、承認プロセス等）とは完全に一線を画する。AIGP試験においては、ガバナンスアクターがみずから「コードを書く」「損失関数をデバッグする」といったシステムビルドを担当する行為は、独立評価人（TEVVアクター）としての客観性とStature（地位）を損なうため明確に誤りとされる。A、B、DはすべてISO 42001およびEU AI Actにおいて影響評価担当（第2線の防衛線）としてガバナンスに要求される正しい役割記述である。</div>
+    </div>
+
+    <div class="quiz-item">
+      <span class="quiz-header">問題 3 — ポリシー、ベストプラクティス、倫理的配慮の適用（PI 3）</span>
+      <p class="quiz-q">ある企業が、社内ヘルプデスクの自動化を目的に、事前学習済みのジェネレーティブAI（LLM）を用いた「自動応答エージェント」を自社開発し、特定の業務フローに組み込む。設計段階において「人間の監視（Human Oversight）」および「倫理的配慮」を適用するベストプラクティスとして、最も適切な判断はどれか？</p>
+      <div class="quiz-options">
+        <span class="quiz-option">A. 顧客対応のスピードを最大化するため、AIが出力した推奨回答は人間のチェックを経ずに自動送信されるようにし、ユーザーがAIとやり取りしている事実を示す通知（ラベル）も一切非表示とする。</span>
+        <span class="quiz-option correct">B. 従業員ユーザーが自動生成された回答を疑うことなく過度に信頼する「オートメーション・バイアス（Automation Bias）」を防ぐため、UI/UXデザイン上、AIの回答には誤りが含まれる可能性がある限界仕様を表示するとともに、オペレーター自身がシステム出力を「無視・上書き・手動中断（Disregard/Override/Interrupt）」できる制御インターフェースを実装する。</span>
+        <span class="quiz-option">C. LLMの元モデル（事前学習済みモデル）は外部ベンダーがトレーニングした製品であるため、自社は内部設計ガバナンス要件（インプットするナレッジDBの選択基準、プロンプトガードレールの適用など）を定義する義務はないと判断する。</span>
+        <span class="quiz-option">D. AIモデルが誤作動を起こした場合に備え、手動でのヘルプデスク窓口といった「人間による代替フォールバック手段」は無駄なコストを発生させるため、一切実装しないと決定する。</span>
+      </div>
+      <span class="quiz-answer">✓ 正解：B</span>
+      <div class="quiz-explain">NIST AI 600-1（ジェネレーティブAIプロファイル）およびEU AI Act 第14条は、ジェネレーティブAIシステムが引き起こす「オートメーション・バイアス（認知バイアス）」に対抗するためのインターフェース設計を求めている。操作者がAI出力を正しく理解し、必要に応じて上書き・無視・停止できる仕組みを実装することがBに合致するため正解となる。Aは透明性通知（EU AI法第50条などの対話型AI開示義務）を怠っており不適切。Cは調達モデルのデプロイヤー・設計者であっても自社の利用環境（RAG等）における設計ガバナンスは必須であるため誤り。Dはリスク管理における「rollover and fallback（代替手動フロー等）」の確保要件に背くため不適切。</div>
+    </div>
+
+    <div class="quiz-item">
+      <span class="quiz-header">問題 4 — 設計・構築におけるリスク管理（PI 4）</span>
+      <p class="quiz-q">高リスクに該当する、自動車の「完全自動倉庫内フォークリフトシステム」の制御AIの開発プロジェクトにおいて、リスク低減階層（Risk Mitigation Hierarchy）およびリスク評価マトリクスを正しく適用したガバナンス上のアプローチはどれか？</p>
+      <div class="quiz-options">
+        <span class="quiz-option correct">A. リスクを徹底的に低減するため、衝突事故の「発生確率」を数理的に算出し、まず「モデルの設計変更による安全検知機能の統合」を試み、次に「障害物接近時の自動緊急ブレーキ制御の実装」、最後に「オペレーターへの警告ラベルの表示と運転訓練マニュアルの配備」という順序でリスク対応計画を設計・適用する。</span>
+        <span class="quiz-option">B. システムの安全性に完璧な保証はないため、危害マトリクスによる検証やテストは実施せず、すべて事故発生後の責任を賠償金（財務損失）として処理するポリシーで承認を行う。</span>
+        <span class="quiz-option">C. リスク低減階層の最優先ステップは「ユーザーに対するマニュアルの提供・警告（情報の提供）」であるため、モデル側の安全仕様（センサーによる衝突停止設計など）の改善をスキップして、取扱説明書の配布だけを完了させる。</span>
+        <span class="quiz-option">D. 本番配備前の「パイロットテスト（限定エリアでの試験稼働）」は、ラボ内の計算シミュレーションに比べてデータ収集効率が低いため、パイロット段階を全面的にスキップしてただちに全体配備を実行する。</span>
+      </div>
+      <span class="quiz-answer">✓ 正解：A</span>
+      <div class="quiz-explain">リスク低減階層（Risk Mitigation Hierarchy / EU AI Act 第9条第5項等）は、危害を制御する優先順として、1.「設計による排除（By Design）」、2.「技術的・運用的制御策の実装（Controls）」、3.「情報の提供・訓練（Training/Information）」を規定しているため、この順序に完全に沿ったAが正解である。Cは階層の最下位である「情報提供」を最優先としており、安全設計を軽視した判断であるため完全に誤りである。Bはリスク管理義務を怠っており不適切。Dは実世界の「配備前パイロットとテスト」のガバナンス上の必要性を看過しており不適切である。</div>
+    </div>
+
+    <div class="quiz-item">
+      <span class="quiz-header">問題 5 — プロセスの文書化（PI 5）</span>
+      <p class="quiz-q">高リスクに分類される「求職者レジュメ自動判定AIツール（TalentMatch）」の設計を終えた開発チームから、100ページに及ぶ技術ログファイルがガバナンス本部に提出された。EU AI Act Annex IVおよびISO/IEC 42001 A.6.2.7に準拠して、監査耐性（Audit Readiness）のある文書化（Documentation）プロセスを完了するための、AIガバナンスプロフェッショナルの行動として最も適切なものはどれか？</p>
+      <div class="quiz-options">
+        <span class="quiz-option">A. 開発現場から提出された生ログファイルをそのまま未編集でサーバーに格納し、ドキュメントの再編集や要約整理、バージョン管理、および「システム概要」「データシート」「モデルカード」といった標準フレームワークへのマッピング、および最終承認署名（Sign-off）の管理フローを全面的に省略する。</span>
+        <span class="quiz-option correct">B. 提出された開発ログおよび性能テストデータを、システムの意図された目的、アーキテクチャの解説、トレーニングに用いられたデータセットの由来（Datasheets）、モデルの特定マイノリティグループ別の評価テストログ（Model Cards）、および残余リスクの受容証明書を含む「Annex IVに準拠した不変の技術文書（Technical Documentation）」として整理し、バージョンを紐付けてGRCプラットフォーム上で管理・承認する。</span>
+        <span class="quiz-option">C. AIツールに用いられた学習データには社外秘データ（著作権や企業機密）が含まれるため、監査人にデータセットの情報を一切検証させないよう、すべてのデータリネージ、およびデータの取得履歴・準備操作に関する文書化をあえて拒否・非表示とする。</span>
+        <span class="quiz-option">D. 文書化は一度作成すれば完了するため、その後にモデルをretrain（追加のデータで再学習）させた際や、判定アルゴリズムが修正された場合でも、初期設計時に作成したドキュメントファイルを一切更新しない方針で運用する。</span>
+      </div>
+      <span class="quiz-answer">✓ 正解：B</span>
+      <div class="quiz-explain">AIガバナンスにおける文書化は、適合性評価、外部監査、およびレギュレーターへの対応を想定し、再現可能かつ不変な形式（システム概要、モデルカード、データシート等の体系化）で監査証跡を整理・保持することが要請されるため、Bが正解である。Aは監査人に対して十分な説明責任を果たすための整理（Annex IV要件などへの適合）を怠っており不適切。Cは企業秘密・知的財産の保護を口実にして、EU AI Act 第10条、第11条が義務付ける「データおよびモデルの透明性と十分な技術資料の保管義務」を完全に放棄しており不適切。Dは、AI技術の動的な変化に伴う「継続的な文書更新（動的な技術文書更新、Clause 7.5.2）」の基準に背くため完全に誤りである。</div>
+    </div>
+  </section>
+
+  <!-- REFERENCES -->
+  <section id="references" style="margin-top: 56px;">
+    <h2 class="appendix-title">引用文献</h2>
+    <ul class="ref-list">
+      <li data-num="1.">Governance Through the AI Lifecycle | Course 3 — AI Career Pro. <a href="https://governance.aicareer.pro/course/pro-3" target="_blank">https://governance.aicareer.pro/course/pro-3</a></li>
+      <li data-num="2.">Training Course – Certified AI Governance Professional (AIGP) — Mosaic Financial Services Infrastructure. <a href="https://mosaicfsi.com/training-course-certified-ai-governance-professional" target="_blank">https://mosaicfsi.com/training-course-certified-ai-governance-professional</a></li>
+      <li data-num="3.">EU AI Act (Regulation (EU) 2024/1689) — eu_ai_act.pdf</li>
+      <li data-num="4.">EU AI Act data governance requirements (SOP template + evidence pack) — Atlan. <a href="https://atlan.com/know/eu-ai-act-data-governance-requirements/" target="_blank">https://atlan.com/know/eu-ai-act-data-governance-requirements/</a></li>
+      <li data-num="5.">AI Governance Administrator: Complete Guide 2026 — Tech Jacks Solutions. <a href="https://techjacksolutions.com/careers/ai/ai-governance-administrator/" target="_blank">https://techjacksolutions.com/careers/ai/ai-governance-administrator/</a></li>
+      <li data-num="6.">Model Cards, Dataset Cards &amp; Agent Cards: Practical Guide — AI Career Pro. <a href="https://governance.aicareer.pro/blog/model-dataset-interface-agent-cards" target="_blank">https://governance.aicareer.pro/blog/model-dataset-interface-agent-cards</a></li>
+      <li data-num="7.">GenAI-Gurus/awesome-eu-ai-act — GitHub. <a href="https://github.com/GenAI-Gurus/awesome-eu-ai-act" target="_blank">https://github.com/GenAI-Gurus/awesome-eu-ai-act</a></li>
+      <li data-num="8.">Top 5 Documentation Mistakes That Will Break Your EU AI Act Compliance — InfosecTrain. <a href="https://www.infosectrain.com/blog/top-5-documentation-mistakes-that-will-break-your-eu-ai-act-compliance" target="_blank">https://www.infosectrain.com/blog/top-5-documentation-mistakes-that-will-break-your-eu-ai-act-compliance</a></li>
+      <li data-num="9.">EU AI Act Compliance training + certificate — DPO Europe. <a href="https://data-privacy-office.eu/courses/artificial-intelligence-regulation-the-fundamentals-of-risk-management-personal-data/" target="_blank">https://data-privacy-office.eu/courses/artificial-intelligence-regulation-the-fundamentals-of-risk-management-personal-data/</a></li>
+      <li data-num="10.">EU AI Act risk management system requirements: April 2026 guide — Openlayer. <a href="https://www.openlayer.com/blog/post/eu-ai-act-risk-management-system-requirements" target="_blank">https://www.openlayer.com/blog/post/eu-ai-act-risk-management-system-requirements</a></li>
+      <li data-num="11.">Article 14: Human Oversight | EU Artificial Intelligence Act. <a href="https://artificialintelligenceact.eu/article/14/" target="_blank">https://artificialintelligenceact.eu/article/14/</a></li>
+      <li data-num="12.">The Essential AIGP Certification Study Guide for Privacy Teams — DataGrail. <a href="https://www.datagrail.io/blog/data-privacy/the-essential-aigp-certification-study-guide-for-privacy-teams/" target="_blank">https://www.datagrail.io/blog/data-privacy/the-essential-aigp-certification-study-guide-for-privacy-teams/</a></li>
+      <li data-num="16.">12 Critical Updates for Your AIGP Certification — 22Academy. <a href="https://22academy.com/blog/10-critical-updates-for-your-aigp-certification" target="_blank">https://22academy.com/blog/10-critical-updates-for-your-aigp-certification</a></li>
+      <li data-num="20.">AI governance tools: the 2026 enterprise buyer's guide — Modulos AG. <a href="https://www.modulos.ai/best-ai-governance-platforms/" target="_blank">https://www.modulos.ai/best-ai-governance-platforms/</a></li>
+      <li data-num="21.">EU AI Act High-Risk Requirements: What Companies Need to Know — Dataiku. <a href="https://www.dataiku.com/stories/blog/eu-ai-act-high-risk-requirements" target="_blank">https://www.dataiku.com/stories/blog/eu-ai-act-high-risk-requirements</a></li>
+      <li data-num="22.">Article 9: Risk Management System | EU Artificial Intelligence Act. <a href="https://artificialintelligenceact.eu/article/9/" target="_blank">https://artificialintelligenceact.eu/article/9/</a></li>
+      <li data-num="23.">The EU AI Act: What are the obligations for providers? — DataGuard. <a href="https://www.dataguard.com/blog/the-eu-ai-act-and-obligations-for-providers/" target="_blank">https://www.dataguard.com/blog/the-eu-ai-act-and-obligations-for-providers/</a></li>
+    </ul>
+  </section>
+</div>
+
+</main>
+
+<script>
+window.addEventListener('scroll', () => {
+  const pct = document.documentElement.scrollTop /
+    (document.documentElement.scrollHeight - document.documentElement.clientHeight) * 100;
+  document.getElementById('prog').style.width = pct + '%';
+});
+
+const menuBtn = document.getElementById('menu-btn');
+const nav = document.getElementById('nav');
+const overlay = document.getElementById('overlay');
+menuBtn.addEventListener('click', () => {
+  nav.classList.toggle('open');
+  overlay.classList.toggle('open');
+});
+overlay.addEventListener('click', () => {
+  nav.classList.remove('open');
+  overlay.classList.remove('open');
+});
+document.querySelectorAll('#nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    nav.classList.remove('open');
+    overlay.classList.remove('open');
+  });
+});
+
+const sections = document.querySelectorAll('section[id], div[id]');
+const navLinks = document.querySelectorAll('#nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const id = entry.target.id;
+      const link = document.querySelector('#nav a[href="#' + id + '"]');
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -65% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
