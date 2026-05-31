@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIGP試験対策 — AIデータガバナンス Domain III.B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a2e;
+  --ink2: #2d2d4e;
+  --ink3: #5a5a7a;
+  --paper: #faf9f6;
+  --paper2: #f2f0eb;
+  --paper3: #e8e5de;
+  --rule: rgba(26,26,46,0.10);
+  --rule2: rgba(26,26,46,0.06);
+  --accent: #b5451b;
+  --accent2: #8a2d0e;
+  --accent-light: rgba(181,69,27,0.07);
+  --gold: #c8963e;
+  --gold-light: rgba(200,150,62,0.10);
+  --sidebar: 280px;
+  --serif: 'Noto Serif JP', 'Georgia', serif;
+  --sans: 'Noto Sans JP', 'Helvetica Neue', sans-serif;
+  --mono: 'IBM Plex Mono', 'Courier New', monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #e8e4d9;
+    --ink2: #c8c2b4;
+    --ink3: #8a8070;
+    --paper: #141420;
+    --paper2: #1c1c2e;
+    --paper3: #252538;
+    --rule: rgba(232,228,217,0.10);
+    --rule2: rgba(232,228,217,0.06);
+    --accent: #e06040;
+    --accent2: #f07050;
+    --accent-light: rgba(224,96,64,0.10);
+    --gold: #d4a855;
+    --gold-light: rgba(212,168,85,0.10);
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: var(--sans);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.85;
+}
+
+/* ─── Scroll progress ─── */
+#prog {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(to right, var(--accent), var(--gold));
+  z-index: 1000;
+  transition: width 0.1s linear;
+}
+
+/* ─── Sidebar ─── */
+#nav {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar);
+  height: 100vh;
+  background: var(--paper2);
+  border-right: 1px solid var(--rule);
+  overflow-y: auto;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 2rem;
+}
+
+.nav-masthead {
+  padding: 2rem 1.5rem 1.5rem;
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper3);
+}
+
+.nav-series {
+  font-family: var(--mono);
+  font-size: 0.60rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+}
+
+.nav-title {
+  font-family: var(--serif);
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ink);
+  margin-bottom: 0.3rem;
+}
+
+.nav-sub-title {
+  font-family: var(--sans);
+  font-size: 0.70rem;
+  color: var(--ink3);
+  line-height: 1.3;
+}
+
+.nav-chapters {
+  padding: 1rem 0;
+  flex: 1;
+}
+
+.nav-ch {
+  display: block;
+  padding: 0.55rem 1.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: var(--sans);
+  color: var(--ink2);
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  border-left: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.nav-ch:hover, .nav-ch.active {
+  color: var(--accent);
+  background: var(--accent-light);
+  border-left-color: var(--accent);
+}
+
+.nav-sub {
+  display: block;
+  padding: 0.3rem 1.5rem 0.3rem 2.4rem;
+  font-size: 0.66rem;
+  color: var(--ink3);
+  text-decoration: none;
+  line-height: 1.4;
+  transition: color 0.2s;
+}
+
+.nav-sub:hover, .nav-sub.active {
+  color: var(--accent);
+}
+
+/* ─── Mobile hamburger ─── */
+#menu-btn {
+  display: none;
+  position: fixed;
+  top: 1rem; left: 1rem;
+  z-index: 500;
+  width: 44px; height: 44px;
+  border: none;
+  background: var(--paper2);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  cursor: pointer;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+#menu-btn span {
+  display: block;
+  width: 22px; height: 2px;
+  background: var(--ink);
+  border-radius: 2px;
+  transition: transform 0.3s;
+}
+
+#overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 150;
+}
+
+/* ─── Main content ─── */
+#main {
+  margin-left: var(--sidebar);
+  padding: 0;
+  max-width: calc(var(--sidebar) + 760px);
+}
+
+/* ─── Cover ─── */
+#cover {
+  padding: 6rem 4rem 5rem;
+  border-bottom: 1px solid var(--rule);
+  background: linear-gradient(160deg, var(--paper) 0%, var(--paper2) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+#cover::before {
+  content: 'III.B';
+  position: absolute;
+  right: -1rem;
+  top: 50%;
+  transform: translateY(-60%) rotate(-12deg);
+  font-family: var(--serif);
+  font-size: 14rem;
+  font-weight: 700;
+  color: var(--rule2);
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+}
+
+.cover-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+}
+
+.cover-title {
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ink);
+  margin-bottom: 0.6rem;
+  max-width: 680px;
+}
+
+.cover-subtitle {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  color: var(--accent);
+  font-weight: 500;
+  margin-bottom: 2rem;
+}
+
+.cover-lead {
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  color: var(--ink2);
+  max-width: 620px;
+  line-height: 1.9;
+  margin-bottom: 2rem;
+}
+
+.cover-meta {
+  display: flex;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.cover-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.cover-meta-label {
+  font-family: var(--mono);
+  font-size: 0.60rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+
+.cover-meta-value {
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ─── Chapters ─── */
+.chapter {
+  border-bottom: 1px solid var(--rule);
+}
+
+.ch-header {
+  padding: 4.5rem 4rem 3.5rem;
+  border-bottom: 1px solid var(--rule2);
+  background: var(--paper);
+  position: relative;
+  overflow: hidden;
+}
+
+.ch-number {
+  position: absolute;
+  right: 3rem;
+  top: 2rem;
+  font-family: var(--serif);
+  font-size: 9rem;
+  font-weight: 700;
+  color: var(--rule2);
+  line-height: 1;
+  user-select: none;
+}
+
+.ch-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.8rem;
+}
+
+.ch-title {
+  font-family: var(--serif);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--ink);
+  max-width: 580px;
+  margin-bottom: 1rem;
+}
+
+.ch-lead {
+  font-family: var(--sans);
+  font-size: 0.92rem;
+  color: var(--ink2);
+  max-width: 540px;
+  line-height: 1.9;
+  padding-left: 1rem;
+  border-left: 3px solid var(--accent);
+}
+
+/* ─── Sections ─── */
+.sec {
+  padding: 3rem 4rem;
+  border-bottom: 1px solid var(--rule2);
+}
+
+.sec:last-child { border-bottom: none; }
+
+.sec-title {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 1.4rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid var(--rule);
+  position: relative;
+}
+
+.sec-title::before {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0;
+  width: 3rem;
+  height: 2px;
+  background: var(--accent);
+}
+
+.sec-body p {
+  font-family: var(--sans);
+  font-size: 0.93rem;
+  color: var(--ink2);
+  line-height: 1.95;
+  margin-bottom: 1.1rem;
+}
+
+.sec-body p:last-child { margin-bottom: 0; }
+
+/* ─── Callout ─── */
+.callout {
+  background: var(--accent-light);
+  border-left: 4px solid var(--accent);
+  padding: 1.2rem 1.5rem;
+  margin: 1.6rem 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.callout p {
+  font-size: 0.88rem !important;
+  margin-bottom: 0.4rem !important;
+}
+
+.callout .callout-title {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* ─── Pullquote ─── */
+.pullquote {
+  margin: 2rem 0;
+  padding: 1.5rem 2rem;
+  border-left: 5px solid var(--gold);
+  background: var(--gold-light);
+  border-radius: 0 8px 8px 0;
+}
+
+.pullquote p {
+  font-family: var(--serif);
+  font-size: 1.05rem !important;
+  font-style: italic;
+  color: var(--ink) !important;
+  line-height: 1.7 !important;
+}
+
+/* ─── Column box ─── */
+.column {
+  background: var(--paper3);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 1.5rem 1.8rem;
+  margin: 1.8rem 0;
+}
+
+.column-label {
+  font-family: var(--mono);
+  font-size: 0.60rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.column p {
+  font-size: 0.88rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* ─── Summary / まとめ ─── */
+.summary {
+  background: var(--paper2);
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--accent);
+  border-radius: 0 0 8px 8px;
+  padding: 1.5rem 1.8rem;
+  margin: 2rem 0;
+}
+
+.summary-title {
+  font-family: var(--mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.summary ul {
+  list-style: none;
+  padding: 0;
+}
+
+.summary li {
+  font-size: 0.88rem;
+  color: var(--ink2);
+  padding: 0.4rem 0 0.4rem 1.4rem;
+  position: relative;
+  line-height: 1.7;
+}
+
+.summary li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ─── Tables ─── */
+.tbl-wrap {
+  overflow-x: auto;
+  margin: 1.8rem 0;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  min-width: 500px;
+}
+
+thead {
+  background: var(--paper3);
+}
+
+th {
+  font-family: var(--sans);
+  font-weight: 700;
+  color: var(--ink);
+  padding: 0.85rem 1.1rem;
+  text-align: left;
+  border-bottom: 2px solid var(--rule);
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+}
+
+td {
+  padding: 0.75rem 1.1rem;
+  color: var(--ink2);
+  border-bottom: 1px solid var(--rule2);
+  line-height: 1.65;
+  vertical-align: top;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--rule2); }
+
+/* ─── Role grid ─── */
+.role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.6rem 0;
+}
+
+.role-card {
+  background: var(--paper2);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 1.3rem;
+}
+
+.role-card-label {
+  font-family: var(--mono);
+  font-size: 0.60rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.role-card-name {
+  font-family: var(--sans);
+  font-size: 0.80rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 0.7rem;
+}
+
+.role-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.role-card li {
+  font-size: 0.82rem;
+  color: var(--ink2);
+  padding: 0.2rem 0 0.2rem 1rem;
+  position: relative;
+  line-height: 1.6;
+}
+
+.role-card li::before {
+  content: '›';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+/* ─── Framework badge list ─── */
+.fw-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.2rem 0;
+}
+
+.fw-list li {
+  padding: 0.8rem 1rem 0.8rem 1rem;
+  border-left: 3px solid var(--paper3);
+  margin-bottom: 0.6rem;
+  background: var(--paper2);
+  border-radius: 0 6px 6px 0;
+  font-size: 0.88rem;
+  color: var(--ink2);
+  line-height: 1.7;
+  transition: border-color 0.2s;
+}
+
+.fw-list li:hover { border-left-color: var(--accent); }
+
+.fw-list .fw-name {
+  font-family: var(--sans);
+  font-weight: 700;
+  color: var(--ink);
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+/* ─── Figure ─── */
+.fig {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.fig-cap {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.10em;
+  color: var(--ink3);
+  margin-bottom: 0.8rem;
+  text-transform: uppercase;
+}
+
+.fig svg {
+  max-width: 100%;
+}
+
+/* ─── Quiz section ─── */
+.quiz-q {
+  background: var(--paper2);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  margin: 2rem 0;
+  overflow: hidden;
+}
+
+.quiz-header {
+  background: var(--paper3);
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.quiz-num {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.quiz-topic {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink2);
+}
+
+.quiz-body {
+  padding: 1.4rem 1.5rem;
+}
+
+.quiz-body p {
+  font-size: 0.88rem;
+  color: var(--ink);
+  line-height: 1.85;
+  margin-bottom: 1.2rem;
+}
+
+.quiz-options {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.2rem;
+}
+
+.quiz-options li {
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+  padding: 0.65rem 1rem;
+  margin-bottom: 0.4rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  font-size: 0.84rem;
+  color: var(--ink2);
+  line-height: 1.65;
+  background: var(--paper);
+  transition: background 0.15s;
+  cursor: default;
+}
+
+.quiz-options li.correct {
+  background: rgba(60,160,80,0.08);
+  border-color: rgba(60,160,80,0.3);
+  color: var(--ink);
+}
+
+.quiz-opt-label {
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--accent);
+  flex-shrink: 0;
+  font-size: 0.80rem;
+  min-width: 1.4rem;
+}
+
+.quiz-options li.correct .quiz-opt-label {
+  color: #3ca050;
+}
+
+.quiz-answer {
+  background: var(--accent-light);
+  border-left: 4px solid var(--accent);
+  padding: 1rem 1.3rem;
+  border-radius: 0 6px 6px 0;
+}
+
+.quiz-answer-title {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.quiz-answer p {
+  font-size: 0.84rem !important;
+  margin-bottom: 0.5rem !important;
+  line-height: 1.75 !important;
+}
+
+/* ─── References ─── */
+#references {
+  padding: 3rem 4rem;
+  background: var(--paper2);
+  border-top: 1px solid var(--rule);
+}
+
+#references h2 {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--ink);
+}
+
+.ref-list {
+  list-style: none;
+  padding: 0;
+}
+
+.ref-list li {
+  font-size: 0.78rem;
+  color: var(--ink3);
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--rule2);
+  line-height: 1.6;
+}
+
+.ref-list a {
+  color: var(--accent);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.ref-list a:hover { text-decoration: underline; }
+
+/* ─── Responsive ─── */
+@media (max-width: 960px) {
+  #nav {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  #nav.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+  }
+
+  #menu-btn { display: flex; }
+
+  #overlay.visible { display: block; }
+
+  #main {
+    margin-left: 0;
+    max-width: 100%;
+  }
+
+  #cover { padding: 5rem 1.5rem 3rem; }
+  #cover::before { display: none; }
+
+  .ch-header { padding: 3rem 1.5rem 2.5rem; }
+  .ch-number { display: none; }
+
+  .sec { padding: 2.5rem 1.5rem; }
+
+  .role-grid { grid-template-columns: 1fr; }
+
+  #references { padding: 2.5rem 1.5rem; }
+}
+
+@media (max-width: 480px) {
+  #cover { padding: 4.5rem 1.2rem 2.5rem; }
+  .ch-header { padding: 2.5rem 1.2rem 2rem; }
+  .sec { padding: 2rem 1.2rem; }
+  .quiz-body { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+
+<button id="menu-btn" aria-label="メニューを開く">
+  <span></span><span></span><span></span>
+</button>
+<div id="overlay"></div>
+
+<nav id="nav">
+  <div class="nav-masthead">
+    <div class="nav-series">IAPP AIGP 試験対策</div>
+    <div class="nav-title">AIデータガバナンス</div>
+    <div class="nav-sub-title">Domain III.B — モデル学習・テスト時のデータ統治</div>
+  </div>
+  <div class="nav-chapters">
+    <a href="#cover" class="nav-ch">序文・概要</a>
+
+    <a href="#ch1" class="nav-ch">PI 1 — データガバナンス要件</a>
+    <a href="#pi1-frameworks" class="nav-sub">主要規格の統合</a>
+    <a href="#pi1-roles" class="nav-sub">役割分担</a>
+    <a href="#pi1-lia" class="nav-sub">正当な利益 (LIA) の3段階テスト</a>
+    <a href="#pi1-special" class="nav-sub">特別カテゴリデータの例外</a>
+
+    <a href="#ch2" class="nav-ch">PI 2 — リネージとプロベナンス</a>
+    <a href="#pi2-frameworks" class="nav-sub">主要フレームワーク</a>
+    <a href="#pi2-roles" class="nav-sub">役割分担</a>
+    <a href="#pi2-gdpr17" class="nav-sub">忘れられる権利との関係</a>
+    <a href="#pi2-table" class="nav-sub">リネージ vs. プロベナンス比較表</a>
+
+    <a href="#ch3" class="nav-ch">PI 3 — 学習・テストの計画と実行</a>
+    <a href="#pi3-frameworks" class="nav-sub">ガバナンスフレームワーク</a>
+    <a href="#pi3-tests" class="nav-sub">7種類のテスト</a>
+    <a href="#pi3-gdpr22" class="nav-sub">GDPR第22条との関係</a>
+    <a href="#pi3-table" class="nav-sub">バイアスvs解釈可能性テスト比較</a>
+
+    <a href="#ch4" class="nav-ch">PI 4 — 課題・リスクの特定と管理</a>
+    <a href="#pi4-frameworks" class="nav-sub">主要フレームワーク</a>
+    <a href="#pi4-roles" class="nav-sub">役割分担</a>
+    <a href="#pi4-gai" class="nav-sub">GAIリスク管理表</a>
+
+    <a href="#ch5" class="nav-ch">PI 5 — 文書化とコンプライアンス実証</a>
+    <a href="#pi5-frameworks" class="nav-sub">主要規格</a>
+    <a href="#pi5-roles" class="nav-sub">役割分担</a>
+
+    <a href="#ch6" class="nav-ch">主要用語解説</a>
+    <a href="#ch7" class="nav-ch">模擬試験問題</a>
+    <a href="#q1" class="nav-sub">問題1 — 法的根拠</a>
+    <a href="#q2" class="nav-sub">問題2 — 特別カテゴリ</a>
+    <a href="#q3" class="nav-sub">問題3 — 自動意思決定</a>
+    <a href="#q4" class="nav-sub">問題4 — プロベナンス監査</a>
+    <a href="#q5" class="nav-sub">問題5 — 人間対象テスト倫理</a>
+    <a href="#references" class="nav-ch">引用文献</a>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- ──────────── COVER ──────────── -->
+<section id="cover">
+  <div class="cover-eyebrow">IAPP AIGP 試験対策 / Domain III.B</div>
+  <h1 class="cover-title">AIモデルおよびシステムにおける<br>学習とテスト時のデータ収集・利用のガバナンス</h1>
+  <div class="cover-subtitle">Domain III.B — 完全対策レポート</div>
+  <p class="cover-lead">
+    AI開発ライフサイクルにおけるモデルの学習（トレーニング）およびテスト（検証・評価）フェーズは、AIシステム全体の信頼性、安全性、公平性、そして法的適合性を決定づける最も重要なプロセスである。AIシステムがもたらすプライバシー侵害、不当な差別、セキュリティ脆弱性などの複合的なリスクが顕在化する中、これらを設計段階から予防的に管理する「デザインによる倫理（Ethics by Design）」の実践が求められている。
+  </p>
+  <p class="cover-lead">
+    本Domain III.Bは、抽象的な倫理原則を具体的な組織の管理策（コントロール）へと昇華させ、実務レベルでAIリスクを測定・管理するための架け橋となる領域である。AIガバナンス専門職に求められる役割は、EU AI Act（欧州AI法）やGDPR、NIST AI RMF、ISO/IEC 42001などと整合させながら、データ収集の適法性、リネージの追跡、多面的なTEVV、問題・リスクの処理、そして検証可能なコンプライアンス証跡の文書化にわたる包括的な統治システムを設計・運用することにある。
+  </p>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">対応資格</span>
+      <span class="cover-meta-value">IAPP AIGP (v2.1)</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">ドメイン</span>
+      <span class="cover-meta-value">Domain III.B</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">Performance Indicators</span>
+      <span class="cover-meta-value">PI 1–5</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">模擬試験</span>
+      <span class="cover-meta-value">5問（詳細解説付き）</span>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── CHAPTER 1: PI 1 ──────────── -->
+<section id="ch1" class="chapter">
+
+  <div class="ch-header">
+    <div class="ch-number">PI1</div>
+    <div class="ch-eyebrow">Performance Indicator 1</div>
+    <h2 class="ch-title">データガバナンス要件の策定と遵守</h2>
+    <p class="ch-lead">データガバナンス要件の策定と遵守とは、AIモデルの学習およびテストに利用されるデータ資産を対象に、その「適法な収集・利用権限（法的根拠）」を確保した上で、データの「品質」「数量」「整合性（インテグリティ）」および「目的適合性（フィット・フォー・パーパス）」を継続的に評価・検証する統治フレームワークを指す。</p>
+  </div>
+
+  <div id="pi1-frameworks" class="sec">
+    <h3 class="sec-title">主要規格の統合</h3>
+    <div class="sec-body">
+      <p>ガバナンスの観点において、データは単なる技術的な入力値ではなく、法的責任、プライバシー、差別リスクを包含する「リスク資産」として管理される。データガバナンス要件を具体化するため、組織は以下の主要規格を統合して管理策を構築する。</p>
+
+      <ul class="fw-list">
+        <li>
+          <span class="fw-name">EU AI Act 第10条（データおよびデータガバナンス）</span>
+          高リスクAIシステムに適用される義務であり、データの適切な設計選択、収集プロセス、アノテーション等の調整、バイアス検査、データギャップの特定などを厳格に求めている。
+        </li>
+        <li>
+          <span class="fw-name">GDPR 第6条（適法な処理の根拠）および第9条（特別なカテゴリのデータの処理制限）</span>
+          個人データをAI学習に用いる際の適法根拠の整理を義務づける。
+        </li>
+        <li>
+          <span class="fw-name">ISO/IEC 42001:2023 付属書A.7（AIシステムのためのデータ）</span>
+          A.7.2（AIシステム開発用データ）、A.7.3（データの取得）、A.7.4（データの品質）を通じて、ライフサイクル全体でのデータ品質管理プロセスを定めている。
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="pi1-roles" class="sec">
+    <h3 class="sec-title">役割分担：MLエンジニア vs. ガバナンス専門職</h3>
+    <div class="sec-body">
+      <p>データガバナンスの実務においては、技術的な最適化を担うMLエンジニアと、法的・倫理的コンプライアンスの担保を担うガバナンス専門職との間で、明確な実務分担が行われる。</p>
+
+      <div class="role-grid">
+        <div class="role-card">
+          <span class="role-card-label">技術担当</span>
+          <div class="role-card-name">MLエンジニア</div>
+          <ul>
+            <li>Pandasなどのライブラリを用いたヌル値の補正</li>
+            <li>異常値の削除・変数の標準化</li>
+            <li>データ拡張（データオーグメンテーション）</li>
+            <li>技術的データ前処理全般</li>
+          </ul>
+        </div>
+        <div class="role-card">
+          <span class="role-card-label">法的・倫理担当</span>
+          <div class="role-card-name">ガバナンス専門職</div>
+          <ul>
+            <li>スクレイピング元のToSや著作権法を確認し適法性を実証</li>
+            <li>個人データを含む場合はDPIA（データ保護影響評価）を実施</li>
+            <li>GDPR上の正当な利益評価（LIA）を主導・文書化</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pi1-lia" class="sec">
+    <h3 class="sec-title">正当な利益アセスメント（LIA）の3段階テスト</h3>
+    <div class="sec-body">
+      <p>AIモデルの学習において最も実務上の論点となるのが、GDPR第6条1項(f)における「正当な利益（Legitimate Interests）」を適法な処理根拠として選定する場合である。</p>
+
+      <p>欧州司法裁判所（CJEU）のCase C-621/22判決（2024年10月）および欧州データ保護会議（EDPB）の「ガイドライン1/2024」において、純粋な商業的利益も正当な利益として認められうることが確認されたが、同時に厳格な3段階テスト（LIA：正当な利益アセスメント）の文書化が求められている。ガバナンス専門職は以下の3段階テストを厳格に実施しなければならない。</p>
+
+      <!-- LIA 3-step SVG diagram -->
+      <div class="fig">
+        <div class="fig-cap">図1 — LIA（正当な利益アセスメント）の3段階テスト</div>
+        <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" style="height:320px; width:100%; max-width:380px;" aria-label="LIA 3段階テスト図">
+          <defs>
+            <marker id="arr1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#b5451b"/>
+            </marker>
+          </defs>
+          <!-- Step 1 -->
+          <rect x="40" y="16" width="240" height="72" rx="8" fill="#b5451b" opacity="0.13"/>
+          <rect x="40" y="16" width="240" height="72" rx="8" fill="none" stroke="#b5451b" stroke-width="1.5"/>
+          <text x="160" y="39" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#b5451b" font-weight="700">STEP 1 — 目的テスト</text>
+          <text x="160" y="58" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="12" fill="#2d2d4e">AI学習によるサービス向上の追求が</text>
+          <text x="160" y="74" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="12" fill="#2d2d4e">適法かつ具体的・真のビジネスニーズか</text>
+          <!-- Arrow 1→2 -->
+          <line x1="160" y1="88" x2="160" y2="112" stroke="#b5451b" stroke-width="1.5" marker-end="url(#arr1)"/>
+          <!-- Step 2 -->
+          <rect x="40" y="112" width="240" height="72" rx="8" fill="#c8963e" opacity="0.10"/>
+          <rect x="40" y="112" width="240" height="72" rx="8" fill="none" stroke="#c8963e" stroke-width="1.5"/>
+          <text x="160" y="135" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#c8963e" font-weight="700">STEP 2 — 必要性テスト</text>
+          <text x="160" y="154" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="12" fill="#2d2d4e">個人データ処理が目的達成に真に必要か</text>
+          <text x="160" y="170" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="12" fill="#2d2d4e">合成データ等の代替手段は存在しないか</text>
+          <!-- Arrow 2→3 -->
+          <line x1="160" y1="184" x2="160" y2="208" stroke="#c8963e" stroke-width="1.5" marker-end="url(#arr1)"/>
+          <!-- Step 3 -->
+          <rect x="40" y="208" width="240" height="80" rx="8" fill="#3c8060" opacity="0.10"/>
+          <rect x="40" y="208" width="240" height="80" rx="8" fill="none" stroke="#3c8060" stroke-width="1.5"/>
+          <text x="160" y="232" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#3c8060" font-weight="700">STEP 3 — バランス確認</text>
+          <text x="160" y="252" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="12" fill="#2d2d4e">組織の利益がデータ主体の</text>
+          <text x="160" y="268" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="12" fill="#2d2d4e">プライバシー・権利・自由を</text>
+          <text x="160" y="284" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="12" fill="#2d2d4e">侵害・上回っていないか</text>
+        </svg>
+      </div>
+
+      <div class="callout">
+        <span class="callout-title">試験対策ポイント</span>
+        <p>CJEU Case C-621/22（2024年10月）とEDPB ガイドライン1/2024は、商業的AIサービス改善を「正当な利益」と認めうることを確認しつつも、LIA文書化を厳格に求めている。オプトアウト権利の保障とセットで覚えること。</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="pi1-special" class="sec">
+    <h3 class="sec-title">特別カテゴリのデータとバイアス修正の例外（EU AI Act 第10条5項）</h3>
+    <div class="sec-body">
+      <p>EU AI Act 第10条5項は、高リスクAIシステムにおいて「バイアスの検出と修正」に不可欠かつ厳格に必要な場合に限り、例外的に人種や信条、健康情報といった「特別なカテゴリの個人データ（GDPR第9条1項）」を、プライバシー保護技術を用いた上で処理することを認めている。これはGDPR第9条2項(g)（重大な公共の利益）と連動する管理策である。</p>
+
+      <div class="callout">
+        <span class="callout-title">重要な接続関係</span>
+        <p>EU AI Act 第10条5項 ← GDPR 第9条2項(g)（重大な公共の利益）が法的根拠。プライバシー保護技術（PETs）の適用が前提条件。「厳格に必要な範囲」という制限を忘れないこと。</p>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+</main>
+
+<script>
+// Scroll progress
+window.addEventListener('scroll', () => {
+  const pct = document.documentElement.scrollTop /
+    (document.documentElement.scrollHeight - document.documentElement.clientHeight) * 100;
+  document.getElementById('prog').style.width = pct + '%';
+});
+
+// Mobile nav
+const menuBtn = document.getElementById('menu-btn');
+const nav = document.getElementById('nav');
+const overlay = document.getElementById('overlay');
+
+menuBtn.addEventListener('click', () => {
+  nav.classList.toggle('open');
+  overlay.classList.toggle('visible');
+});
+
+overlay.addEventListener('click', () => {
+  nav.classList.remove('open');
+  overlay.classList.remove('visible');
+});
+
+nav.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 960) {
+      nav.classList.remove('open');
+      overlay.classList.remove('visible');
+    }
+  });
+});
+
+// Active nav via IntersectionObserver
+const navLinks = nav.querySelectorAll('a[href^="#"]');
+const sections = document.querySelectorAll('[id]');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const active = nav.querySelector(`a[href="#${entry.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+
+<!-- ──────────── CHAPTER 2: PI 2 ──────────── -->
+<section id="ch2" class="chapter">
+
+  <div class="ch-header">
+    <div class="ch-number">PI2</div>
+    <div class="ch-eyebrow">Performance Indicator 2</div>
+    <h2 class="ch-title">データリネージとデータプロベナンスの確立と文書化</h2>
+    <p class="ch-lead">データの追跡可能性（トレーサビリティ）の確保は、AIガバナンスにおける「アカウンタビリティ（説明責任）」の礎石である。データがどこから来て（プロベナンス）、AIパイプライン内をどのように流れ、どのような変換を経て現在のモデルに影響を与えているか（リネージ）を明確に記録することを意味する。</p>
+  </div>
+
+  <div id="pi2-frameworks" class="sec">
+    <h3 class="sec-title">主要フレームワークとコントロール</h3>
+    <div class="sec-body">
+      <p>データトレーサビリティの確保にあたっては、以下の主要なフレームワークやコントロールが適用される。これにより、モデルの予測結果のデバッグが容易になるだけでなく、当局からの監査要求に耐えうる法的・技術的な証跡を担保できる。</p>
+
+      <ul class="fw-list">
+        <li>
+          <span class="fw-name">Datasheets for Datasets（Gebru et al.）</span>
+          データセットの構築目的（Motivation）、組成（Composition）、収集プロセス（Collection）、前処理・クリーニング・アノテーション（Preprocessing）、推奨用途（Uses）、配布（Distribution）、およびメンテナンス（Maintenance）についての詳細な回答を文書として伴うことを提唱した、透明性とアカウンタビリティを確保するための事実上のメタデータ標準規格である。
+        </li>
+        <li>
+          <span class="fw-name">ISO/IEC 42001:2023 A.7.5（データプロベナンス）</span>
+          データのライフサイクルおよびAIシステムのライフサイクルを通じて、データソースの起点や処理履歴、管理権限の移転（Chain of Custody）を文書化する手順を求めている。
+        </li>
+        <li>
+          <span class="fw-name">NIST AI RMF Playbook MAP 2.3</span>
+          実験設計、データ収集、および選択過程における科学的完全性とTEVV（テスト、評価、検証、妥当性確認）の考慮事項を特定し、文書化することを推奨している。
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="pi2-roles" class="sec">
+    <h3 class="sec-title">役割分担：MLエンジニア vs. ガバナンス専門職</h3>
+    <div class="sec-body">
+      <p>データリネージとデータプロベナンスの実装においても、役割分担が明確に分かれる。</p>
+
+      <div class="role-grid">
+        <div class="role-card">
+          <span class="role-card-label">技術担当</span>
+          <div class="role-card-name">MLエンジニア</div>
+          <ul>
+            <li>特徴量ストア（Feature Store）やDVC（Data Version Control）、MLflowなどのツールを活用</li>
+            <li>どのバージョンのデータがどのトレーニングジョブに流れたかを追跡する自動化パイプラインを構成</li>
+          </ul>
+        </div>
+        <div class="role-card">
+          <span class="role-card-label">法的・倫理担当</span>
+          <div class="role-card-name">ガバナンス専門職</div>
+          <ul>
+            <li>データセット全体の法的調達ルートを実証</li>
+            <li>サードパーティから取得したデータに個人情報、著作権保護コンテンツ、商業利用不可能なライセンスが含まれていないかを精査</li>
+            <li>その承認ステータスをメタデータ（データシート）に組み込む</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pi2-gdpr17" class="sec">
+    <h3 class="sec-title">GDPR第17条（忘れられる権利）との不可分な関係</h3>
+    <div class="sec-body">
+      <p>プライバシー法、特にGDPR第17条（消去権／忘れられる権利）への対応において、データプロベナンスとリネージの文書化は不可欠である。データ主体から削除請求があった際、その個人データがどの学習データセットに含まれ、どのモデルの学習に用いられたかを即座に特定できなければ、法令遵守は不可能となる。</p>
+
+      <div class="callout">
+        <span class="callout-title">実務上の論点</span>
+        <p>「消去請求 → データセットの特定 → 学習済みモデルへの影響評価」という連鎖的なプロセスを支えるのがプロベナンス文書化である。この文書が整備されていない場合、GDPR第17条への対応は実質的に不可能となり、制裁リスクが高まる。</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="pi2-table" class="sec">
+    <h3 class="sec-title">データリネージ vs. データプロベナンス：比較表</h3>
+    <div class="sec-body">
+      <p>試験対策上、データリネージ（Data Lineage）とデータプロベナンス（Data Provenance）の概念的および実務的な違いを整理しておくことは極めて重要である。</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>評価軸</th>
+              <th>データリネージ（Data Lineage）</th>
+              <th>データプロベナンス（Data Provenance）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>主な焦点</strong></td>
+              <td>システム間のデータの「流れ（Flow）」と「技術的な変換（Transformation）」の追跡。</td>
+              <td>データの「出所（Origin）」、「作成者（Authorship）」、および「管理権限の移転（Chain of Custody）」の記録。</td>
+            </tr>
+            <tr>
+              <td><strong>中核となる問い</strong></td>
+              <td>データはどのパイプラインを経由して、どのモデルに流れたか、変換ロジックは何か。</td>
+              <td>このデータは元々どこから取得され、誰が処理を承認し、適法な権利に基づいているか。</td>
+            </tr>
+            <tr>
+              <td><strong>主要な担当者</strong></td>
+              <td>データエンジニア、MLOpsエンジニア、データアナリスト。</td>
+              <td>外部監査人、コンプライアンスオフィサー、AIガバナンス専門職。</td>
+            </tr>
+            <tr>
+              <td><strong>ガバナンス価値</strong></td>
+              <td>デバッグ、影響分析、スキーマ更新時の障害防止、システム移行。</td>
+              <td>著作権認証、ライセンス遵守、適法データ収集の規制・法的立証。</td>
+            </tr>
+            <tr>
+              <td><strong>具体的な記録例</strong></td>
+              <td>「dbtモデルにおいて、SalesforceのテーブルAからステージングテーブルBへのCAST処理」</td>
+              <td>「パートナー企業XのAPIより、2026年5月31日に取得。アノテーターYがラベリングを施し、ガバナンス部Zが承認」</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ──────────── CHAPTER 3: PI 3 ──────────── -->
+<section id="ch3" class="chapter">
+
+  <div class="ch-header">
+    <div class="ch-number">PI3</div>
+    <div class="ch-eyebrow">Performance Indicator 3</div>
+    <h2 class="ch-title">AIモデルおよびシステムの学習とテストの計画・実行</h2>
+    <p class="ch-lead">学習とテストの計画・実行とは、開発中のAIシステムが意図した性能（正確性、頑健性）を満たし、安全性、プライバシー、公平性を損なわないことを実証するための「TEVV（Test, Evaluation, Validation, and Verification）」のプロセスを指す。ガバナンスの役割は、単なる「バグの発見」を超えて、社会的な価値の棄損（差別、権利侵害）や法的ペナルティを防ぐための合格基準（ゲートウェイ）を定義し、それを計画的に執行させることにある。</p>
+  </div>
+
+  <div id="pi3-frameworks" class="sec">
+    <h3 class="sec-title">計画と実行をサポートする主要なガバナンスフレームワーク</h3>
+    <div class="sec-body">
+      <ul class="fw-list">
+        <li>
+          <span class="fw-name">NIST AI RMF「MEASURE（測定）」機能</span>
+          AIリスクおよび信頼性特性（妥当性と信頼性、安全性、公平性とバイアスマネジメント、プライバシー強化など）を測定するための定量・定性評価要件を定義している。
+        </li>
+        <li>
+          <span class="fw-name">EU AI Act 付属書IV（技術文書）</span>
+          モデルの仕様、テスト手順、正確性・頑健性・セキュリティに関する評価メトリクスの詳細開示を要請する。
+        </li>
+        <li>
+          <span class="fw-name">ISO/IEC 42001:2023 A.6.2.4（AIシステムの検証および妥当性確認）</span>
+          AIシステムの出力が要件を満たしているかを検証するプロセスを定義することを求める。
+        </li>
+        <li>
+          <span class="fw-name">Partnership on AI (PAI) AI Assurance Stack</span>
+          測定（Measurement）、アセスメント（Assessment）、コミュニケーション（Communication）の3層構造からなるアシュアランスモデルを提示し、justified trust（正当化された信頼）の構築を提唱している。
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="pi3-tests" class="sec">
+    <h3 class="sec-title">7種類のテスト：テスト計画書（Test Plan）の監督</h3>
+    <div class="sec-body">
+      <p>ガバナンス専門職は、MLチームが以下の7つのテストをすべて網羅する「テスト計画書（Test Plan）」を策定し、合格基準を設定しているかを監督する。</p>
+
+      <!-- Test Types SVG flow -->
+      <div class="fig">
+        <div class="fig-cap">図2 — 7種類のTEVVテスト概念図</div>
+        <svg viewBox="0 0 320 440" xmlns="http://www.w3.org/2000/svg" style="height:440px; width:100%; max-width:380px;" aria-label="7種類のテスト図">
+          <defs>
+            <marker id="arr2" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#5a5a7a"/>
+            </marker>
+          </defs>
+          <!-- Blocks -->
+          <rect x="30" y="8" width="260" height="46" rx="6" fill="#b5451b" opacity="0.15"/>
+          <rect x="30" y="8" width="260" height="46" rx="6" fill="none" stroke="#b5451b" stroke-width="1.3"/>
+          <text x="160" y="28" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#b5451b" font-weight="700">1. ユニットテスト</text>
+          <text x="160" y="46" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="12" fill="#2d2d4e">個別モジュールの単体動作検証</text>
+          <line x1="160" y1="54" x2="160" y2="66" stroke="#5a5a7a" stroke-width="1.2" marker-end="url(#arr2)"/>
+
+          <rect x="30" y="66" width="260" height="46" rx="6" fill="#c8963e" opacity="0.12"/>
+          <rect x="30" y="66" width="260" height="46" rx="6" fill="none" stroke="#c8963e" stroke-width="1.3"/>
+          <text x="160" y="86" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#c8963e" font-weight="700">2. 結合テスト</text>
+          <text x="160" y="104" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="12" fill="#2d2d4e">複数コンポーネントの協調動作検証</text>
+          <line x1="160" y1="112" x2="160" y2="124" stroke="#5a5a7a" stroke-width="1.2" marker-end="url(#arr2)"/>
+
+          <rect x="30" y="124" width="260" height="46" rx="6" fill="#3c7080" opacity="0.12"/>
+          <rect x="30" y="124" width="260" height="46" rx="6" fill="none" stroke="#3c7080" stroke-width="1.3"/>
+          <text x="160" y="144" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#3c7080" font-weight="700">3. バリデーションテスト</text>
+          <text x="160" y="162" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="12" fill="#2d2d4e">実運用環境に近い汎化性能の測定</text>
+          <line x1="160" y1="170" x2="160" y2="182" stroke="#5a5a7a" stroke-width="1.2" marker-end="url(#arr2)"/>
+
+          <rect x="30" y="182" width="260" height="46" rx="6" fill="#5a3c80" opacity="0.12"/>
+          <rect x="30" y="182" width="260" height="46" rx="6" fill="none" stroke="#5a3c80" stroke-width="1.3"/>
+          <text x="160" y="202" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#5a3c80" font-weight="700">4. 性能テスト</text>
+          <text x="160" y="220" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="12" fill="#2d2d4e">レイテンシ・スループット・計算資源効率</text>
+          <line x1="160" y1="228" x2="160" y2="240" stroke="#5a5a7a" stroke-width="1.2" marker-end="url(#arr2)"/>
+
+          <rect x="30" y="240" width="260" height="46" rx="6" fill="#802020" opacity="0.12"/>
+          <rect x="30" y="240" width="260" height="46" rx="6" fill="none" stroke="#802020" stroke-width="1.3"/>
+          <text x="160" y="260" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#802020" font-weight="700">5. セキュリティテスト</text>
+          <text x="160" y="278" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="12" fill="#2d2d4e">レッドチーム / 敵対的攻撃への耐性</text>
+          <line x1="160" y1="286" x2="160" y2="298" stroke="#5a5a7a" stroke-width="1.2" marker-end="url(#arr2)"/>
+
+          <rect x="30" y="298" width="260" height="46" rx="6" fill="#206050" opacity="0.12"/>
+          <rect x="30" y="298" width="260" height="46" rx="6" fill="none" stroke="#206050" stroke-width="1.3"/>
+          <text x="160" y="318" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#206050" font-weight="700">6. バイアステスト</text>
+          <text x="160" y="336" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="12" fill="#2d2d4e">保護属性への不利益影響比率（DIR）算定</text>
+          <line x1="160" y1="344" x2="160" y2="356" stroke="#5a5a7a" stroke-width="1.2" marker-end="url(#arr2)"/>
+
+          <rect x="30" y="356" width="260" height="72" rx="6" fill="#3c5080" opacity="0.12"/>
+          <rect x="30" y="356" width="260" height="72" rx="6" fill="none" stroke="#3c5080" stroke-width="1.3"/>
+          <text x="160" y="376" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#3c5080" font-weight="700">7. 解釈可能性テスト</text>
+          <text x="160" y="396" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="12" fill="#2d2d4e">LIME/SHAPによる予測根拠の</text>
+          <text x="160" y="414" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" font-size="12" fill="#2d2d4e">人間評価可能性の検証（MHO基盤）</text>
+        </svg>
+      </div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>テスト名称</th>
+              <th>技術的な定義</th>
+              <th>ガバナンス上の目的・チェックポイント</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. ユニットテスト</strong></td>
+              <td>個別の前処理コードやニューラルネットワークのレイヤーなど、個別のモジュールが単体で正確に動作するかを検証する。</td>
+              <td>実装ミスによるデータリーク（テストデータの学習データへの混入等）の早期防止。</td>
+            </tr>
+            <tr>
+              <td><strong>2. 結合テスト</strong></td>
+              <td>データ収集パイプライン、モデル推論API、ユーザーインターフェース（UI/UX）などの複数コンポーネントの協調動作を検証する。</td>
+              <td>エラー伝播（エラープロパゲーション）によるシステムダウンや予期せぬ挙動の回避。</td>
+            </tr>
+            <tr>
+              <td><strong>3. バリデーションテスト</strong></td>
+              <td>モデル開発用の学習・検証セットとは完全に独立したテストセットを用いて、実運用環境（Production）に近いインプットにおける汎化性能を測定する。</td>
+              <td>未知のデータに対する予測の頑健性の担保、コンセプトドリフト発生時の挙動の予測。</td>
+            </tr>
+            <tr>
+              <td><strong>4. 性能テスト</strong></td>
+              <td>推論レイテンシ（遅延時間）、スループット（処理能力）、および計算資源（GPU/CPU）の効率をテストする。</td>
+              <td>業務継続性の評価、高負荷時におけるフェイルセーフ動作のテスト、環境負荷評価。</td>
+            </tr>
+            <tr>
+              <td><strong>5. セキュリティテスト</strong></td>
+              <td>敵対的攻撃、データ汚染、モデル抽出攻撃、メンバーシップ推論攻撃などに対するモデルの耐性を、レッドチーム演習等を通じて検証する。</td>
+              <td>悪意ある第三者によるモデルの乗っ取りや、モデルを逆算した学習データの復元（機密・PII漏洩）の防止。</td>
+            </tr>
+            <tr>
+              <td><strong>6. バイアステスト</strong></td>
+              <td>人種、年齢、性別などの保護属性に関する「不利益な影響（Disparate Impact）」を計算する。</td>
+              <td>非差別法の遵守、不利益影響比率（DIR）の算定、組織的倫理指標の適合評価。</td>
+            </tr>
+            <tr>
+              <td><strong>7. 解釈可能性テスト</strong></td>
+              <td>AIモデルの予測要因や意思決定に至る論理を人間が評価可能かをテストする。LIMEやSHAPなどのモデルに依存しない事後説明手法を用いる。</td>
+              <td>ブラックボックス問題の解消、説明可能性の担保、人間による有意義な監視（MHO）が実行可能かどうかの評価。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="pi3-gdpr22" class="sec">
+    <h3 class="sec-title">GDPR第22条（自動意思決定の制限）との連関</h3>
+    <div class="sec-body">
+      <p>モデルの「学習・テストの計画・実行」および「解釈可能性テスト」は、GDPR第22条（プロファイリングを含む、自動化された意思決定の制限）と表裏一体の関係にある。</p>
+
+      <p>GDPR第22条1項は、個人に対して「法的効果または同様に重大な影響を及ぼす、プロファイリングを含む、単に自動化された処理のみに基づく決定（Solely Automated Decision-making）」を受けない権利を認めている。</p>
+
+      <p>欧州司法裁判所（CJEU）の「SCHUFA判決」（2023年）において、生成された自動スコアを第三者が重く信頼して意思決定に用いる場合、そのスコア生成プロセス自体が自動意思決定（ADM）に該当しうると判断され、Article 22の対象範囲が大幅に拡張された。したがって、AIツールの出力を単に人間が追認（ラバースタンプ）するだけの運用は、事実上のADMと見なされ違法となるリスクがある。</p>
+
+      <div class="pullquote">
+        <p>「有意義な人間による関与（Meaningful Human Oversight）」を実証するためには、解釈可能性テストを通じて、モデルの限界の理解、上書き権限（Override Authority）の保有、バイアス認知能力の3要素を担保しなければならない。</p>
+      </div>
+
+      <div class="column">
+        <span class="column-label">MHO（有意義な人間による監視）の3要素</span>
+        <p><strong>① モデルの限界の理解：</strong>AIの出力がいつ不確実（信頼度が低い）になるかをオペレーターが客観的に判断できること。</p>
+        <p><strong>② 上書き権限（Override Authority）の保有：</strong>AIの不適切な推薦を、オペレーター自身の判断で実質的に上書き・却下できること。</p>
+        <p><strong>③ バイアス認知能力：</strong>モデルの予測に潜む認知バイアス（「AIの出力は常に正しい」とする自動化バイアスなど）に流されず、提供される説明（SHAPなど）を客観的に評価できること。</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="pi3-table" class="sec">
+    <h3 class="sec-title">バイアステスト vs. 解釈可能性テスト：比較表</h3>
+    <div class="sec-body">
+      <p>試験対策上、バイアステスト（Bias Testing）と解釈可能性テスト（Interpretability Testing）の相違点を整理しておくことは極めて重要である。</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>評価軸</th>
+              <th>バイアステスト（Bias Testing）</th>
+              <th>解釈可能性テスト（Interpretability Testing）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>主要な目的</strong></td>
+              <td>AIシステムの出力における「公平性（Fairness）」の評価。特定グループに対する不当な不利益や不均衡を検出する。</td>
+              <td>AIモデルの意思決定における「説明可能性（Explainability）」の評価。人間がモデルの思考回路を理解・トレース可能にする。</td>
+            </tr>
+            <tr>
+              <td><strong>主な測定対象</strong></td>
+              <td>合格率の差異、不利益影響比率（DIR）、等価オッズ（Equalized Odds）、機会の平等（Equal Opportunity）。</td>
+              <td>特定のインプットに対するモデル内部の特徴量寄与度（アトリビューション値）、LIME/SHAPの正確性・一貫性。</td>
+            </tr>
+            <tr>
+              <td><strong>主なガバナンス関係性</strong></td>
+              <td>差別防止（非差別法）、企業の倫理的価値観の担保、EU AI Act 第10条適合性。</td>
+              <td>GDPR第22条（自動決定に対する説明権）、意味のある人間による監視（MHO）の基盤構築。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ──────────── CHAPTER 4: PI 4 ──────────── -->
+<section id="ch4" class="chapter">
+
+  <div class="ch-header">
+    <div class="ch-number">PI4</div>
+    <div class="ch-eyebrow">Performance Indicator 4</div>
+    <h2 class="ch-title">学習およびテストフェーズにおける課題とリスクの特定と管理</h2>
+    <p class="ch-lead">TEVVプロセスを通じて発見されたモデルの性能劣化、未知の脆弱性、データシフト、または倫理的コンプライアンスの欠陥に対して、組織が事前に合意したリスク許容度（Risk Tolerance）に照らし合わせ、適切な「リスク治療計画（Risk Treatment）」を執行するプロセスである。</p>
+  </div>
+
+  <div id="pi4-frameworks" class="sec">
+    <h3 class="sec-title">主要フレームワーク</h3>
+    <div class="sec-body">
+      <p>ガバナンスとしての優先事項は、不具合そのものを技術的に修正することだけでなく、未処理の「残留リスク（Residual Risk）」を評価し、開発を続行すべきか、それともプロジェクトを停止すべきかの意思決定基準（Go/No-go ゲートウェイ）を提供することにある。この段階でのリスク管理をサポートするフレームワークとして、以下が主に参照される。</p>
+
+      <ul class="fw-list">
+        <li>
+          <span class="fw-name">NIST AI RMF「MANAGE（管理）」機能</span>
+          特定されたリスクに対して、低減（Mitigate）、転送（Transfer）、回避（Avoid）、受容（Accept）のリスク対応計画を策定・実施・文書化する要件を定める。
+        </li>
+        <li>
+          <span class="fw-name">ISO/IEC 42001:2023 6.1.3（AIリスク対応）および8.3（AIリスク対応）</span>
+          特定されたAIリスクに対する治療プロセスと、残留リスクが許容可能であることを証明するアプローチを定義することを義務づける。
+        </li>
+        <li>
+          <span class="fw-name">NIST AI 600-1 (Generative AI Profile)</span>
+          ハルシネーション（Confabulation）、情報の完全性（Information Integrity）の損失、知的財産権の侵害など、特にジェネレーティブAI（GAI）に特有、または誇張されたリスクとそれに対する管理策を詳述している。
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="pi4-roles" class="sec">
+    <h3 class="sec-title">役割分担：MLエンジニア vs. ガバナンス専門職</h3>
+    <div class="sec-body">
+      <p>ガバナンス専門職とMLエンジニアは、不具合へのアプローチにおいて役割分担を行う。</p>
+
+      <div class="role-grid">
+        <div class="role-card">
+          <span class="role-card-label">技術担当</span>
+          <div class="role-card-name">MLエンジニア</div>
+          <ul>
+            <li>テスト精度が著しく低下した場合のドロップアウト率の変更</li>
+            <li>L1/L2正則化の適用による過学習（Overfitting）の抑制</li>
+            <li>学習率（Learning Rate）の再調整などの技術的対応</li>
+          </ul>
+        </div>
+        <div class="role-card">
+          <span class="role-card-label">法的・倫理担当</span>
+          <div class="role-card-name">ガバナンス専門職</div>
+          <ul>
+            <li>ベンダー選定・調達の段階で「ゼロデータ保持（Zero Data Retention）」条項を盛り込んだ契約を締結</li>
+            <li>サードパーティモデルであっても自組織のリスク許容度に準じているかを評価するための「AIレッドチーム演習」を自社で義務づける</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pi4-gai" class="sec">
+    <h3 class="sec-title">ジェネレーティブAI（GAI）固有リスクの管理（NIST AI 600-1）</h3>
+    <div class="sec-body">
+      <p>ジェネレーティブAI（GAI）モデルを採用する場合、NIST AI 600-1に定義されるGAI固有のリスクを学習およびテストフェーズで検出し、対処する管理策を整備する必要がある。</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>GAIリスクカテゴリ</th>
+              <th>概要・学習テスト時の現れ方</th>
+              <th>ガバナンス対応・低減管理策</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. CBRN（化学・生物・放射性・核）能力</strong></td>
+              <td>モデルがCBRN兵器の製造方法や調達ルートなどの有害な知識を学習・出力するリスク。</td>
+              <td>学習データのフィルタリング、RLHF、およびプロンプトテストによる、拒否（Refusal）対応能力の検証。</td>
+            </tr>
+            <tr>
+              <td><strong>2. ハルシネーション（Confabulation）</strong></td>
+              <td>モデルが真実らしく聞こえるが実際には誤っている情報（虚偽事実）を出力するリスク。</td>
+              <td>ファインテューニング、RAGデータの接地（Grounding）確認、ファクトチェックAPIとの統合テスト。</td>
+            </tr>
+            <tr>
+              <td><strong>3. 著作権・知的財産（IP）侵害</strong></td>
+              <td>学習データに著作権保護対象、商標、特許情報が含まれ、出力時にそのままコピーされるリスク。</td>
+              <td>オプトアウトの意思表明（EU AI Act 著作権指令第4条3項）を検出するポリシーの実装、重複除外テスト。</td>
+            </tr>
+            <tr>
+              <td><strong>4. 情報セキュリティ脆弱性</strong></td>
+              <td>モデルがプロンプトインジェクションに対して脆弱であり、システム特権や機密を流出させるリスク。</td>
+              <td>敵対的ロールプレイング（レッドチーム）、インプットフィルターのテスト、コード自動生成モデルの静的・動的解析。</td>
+            </tr>
+            <tr>
+              <td><strong>5. バイアス・均質化（Homogenization）</strong></td>
+              <td>マイノリティの言語・文化データの不適合、特定の偏った歴史・社会的偏見を再生産するリスク。</td>
+              <td>出力データにおける表現バイアスの統計的評価、リサンプリング、アドバーサリアル・トレーニング。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <span class="callout-title">試験対策ポイント — GAIリスクの出典</span>
+        <p>NIST AI 600-1（Generative AI Profile）は、汎用的なNIST AI RMFを補完する形でGAI固有リスクを体系化した文書。試験では「どのフレームワークがGAI特有リスクを扱うか」という問われ方に注意。</p>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ──────────── CHAPTER 5: PI 5 ──────────── -->
+<section id="ch5" class="chapter">
+
+  <div class="ch-header">
+    <div class="ch-number">PI5</div>
+    <div class="ch-eyebrow">Performance Indicator 5</div>
+    <h2 class="ch-title">学習・テストプロセスの文書化による検証・コンプライアンス実証・リスク管理</h2>
+    <p class="ch-lead">学習・テストプロセスの文書化とは、モデル開発のすべての過程（目的定義、アノテーション手順、テスト結果、バイアス緩和策など）を、組織の内外部（監査人、規制当局、顧客など）に対して客観的に実証可能な「コンプライアンス成果物（Compliance Artifacts）」として系統的に整備・保管する行為である。</p>
+  </div>
+
+  <div id="pi5-frameworks" class="sec">
+    <h3 class="sec-title">文書化の国際規格・フレームワーク標準</h3>
+    <div class="sec-body">
+      <p>AIガバナンスが機能していることを示す最上のエビデンスであり、法的な係争時（過失責任の追求を受けた場合など）の「防御手段」として極めて重要になる。文書化を体系的に行うために、以下の国際規格およびフレームワークが標準として活用される。</p>
+
+      <ul class="fw-list">
+        <li>
+          <span class="fw-name">Model Cards for Model Reporting（Mitchell et al.）</span>
+          リリースされるAIモデルに付属すべき標準の短文ドキュメントであり、モデルの概要、想定用途、評価データの条件、人口統計学的・文化的グループ別に分解された定量評価結果（Disaggregated Evaluation）、倫理的配慮事項などを一元的に網羅する。
+        </li>
+        <li>
+          <span class="fw-name">EU AI Act 第11条（技術文書）および付属書IV</span>
+          高リスクAIシステムにCEマークを付与する前提となる「適合性評価（Conformity Assessment）」に必須となる技術文書の内容を定めている。
+        </li>
+        <li>
+          <span class="fw-name">ISO/IEC 42001:2023 7.5（文書化された情報）およびA.6.2.7（AIシステム技術文書）</span>
+          組織が本規格に準拠してAIを設計・開発したことを示すため、変更履歴やテスト承認ログを「不変の形で追跡（Immutable Audit Trail）」できることを要求する。
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="pi5-roles" class="sec">
+    <h3 class="sec-title">役割分担：文書化の二層構造</h3>
+    <div class="sec-body">
+      <p>文書化における実務も、技術データの記録と、ガバナンス説明責任の構築という二つのレイヤーに分けられる。</p>
+
+      <div class="role-grid">
+        <div class="role-card">
+          <span class="role-card-label">技術担当</span>
+          <div class="role-card-name">MLエンジニア</div>
+          <ul>
+            <li>モデル開発ライフサイクルの成果物（エクスポートされたモデルバイナリ、重みパラメータ）を技術仕様書として自動出力</li>
+            <li>ハイパーパラメータの設定値、TensorBoardやMLflow等の検証誤差・正確性グラフの記録</li>
+          </ul>
+        </div>
+        <div class="role-card">
+          <span class="role-card-label">法的・倫理担当</span>
+          <div class="role-card-name">ガバナンス専門職</div>
+          <ul>
+            <li>技術的な出力を法律家・経営幹部・外部監査人に伝わる形に再翻訳してDatasheet（データシート）やModel Card（モデルカード）に統合</li>
+            <li>ISO/IEC 42001への適合性を示す「適用宣言書（SoA：Statement of Applicability）」を起草</li>
+            <li>リスク評価とコントロールが完全に整合している証跡を整備</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="summary">
+        <span class="summary-title">PI 1–5 まとめ</span>
+        <ul>
+          <li>PI 1：データは「リスク資産」。適法根拠（特にLIA/正当な利益）の文書化が最重要。</li>
+          <li>PI 2：プロベナンス（出所・権限）とリネージ（流れ・変換）は役割が異なる。GDPR第17条対応の土台。</li>
+          <li>PI 3：7種類のTEVVテスト計画書の監督がガバナンス職の役割。GDPR第22条ADMとMHOは表裏一体。</li>
+          <li>PI 4：Go/No-go ゲートウェイを設ける。GAI固有リスクはNIST AI 600-1を参照。</li>
+          <li>PI 5：Compliance Artifacts（コンプライアンス成果物）= モデルカード + データシート + SoA + Immutable Audit Trail。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ──────────── CHAPTER 6: KEY TERMS ──────────── -->
+<section id="ch6" class="chapter">
+
+  <div class="ch-header">
+    <div class="ch-number">KT</div>
+    <div class="ch-eyebrow">Key Terms</div>
+    <h2 class="ch-title">主要用語解説</h2>
+    <p class="ch-lead">AIGP試験において頻出の定義・概念を整理した用語集。各用語は定義と関連フレームワークとの紐付けで理解すること。</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec-body">
+
+      <div class="column">
+        <span class="column-label">用語 01 — データプロベナンス（Data Provenance）</span>
+        <p>データの出自（Origin）、データの取得元組織（政府機関、サードパーティAPIなど）、および所有権・利用権限（ライセンス、同意等）の移転に関する履歴を追跡・不変的に記録した、監査および法的ガバナンス向けの証跡。</p>
+        <p><em>関連規格：ISO/IEC 42001:2023 A.7.5、Datasheets for Datasets</em></p>
+      </div>
+
+      <div class="column">
+        <span class="column-label">用語 02 — データリネージ（Data Lineage）</span>
+        <p>データがAIシステム内のデータ処理パイプラインを通じてどのように流れていき、どのような形式・内容の変換（クレンジング、ダミー化、フィルタリング等）が行われたかを技術的かつオペレーショナルに記録するシステム可視化情報。</p>
+        <p><em>関連ツール：dbt、DVC（Data Version Control）、MLflow</em></p>
+      </div>
+
+      <div class="column">
+        <span class="column-label">用語 03 — TEVV（テスト、評価、検証、妥当性確認）</span>
+        <p>AIシステムの品質を保証するために実施される、多段階の技術的・社会技術的評価方法の総称（Test, Evaluation, Validation, and Verification）。システムの正常な機能のみならず、限界・不具合、バイアス、脆弱性をも網羅的に測定するために、NISTやISO等で標準化されている。</p>
+        <p><em>関連規格：NIST AI RMF MEASURE機能、EU AI Act 付属書IV</em></p>
+      </div>
+
+      <div class="column">
+        <span class="column-label">用語 04 — 有意義な人間による関与（Meaningful Human Oversight：MHO）</span>
+        <p>AIを用いた決定がGDPR第22条の「純粋な自動意思決定（Solely Automated ADM）」に該当しないように、AIを単に承認（ラバースタンプ）するだけでなく、オペレーター自身がAIの決定限界を理解し、その予測根拠を分析した上で、自らの権限で却下・変更できる独立した統治機能を人間の監視チームに付与すること。</p>
+        <p><em>関連法令：GDPR第22条、CJEU SCHUFA判決（2023年）</em></p>
+      </div>
+
+      <div class="column">
+        <span class="column-label">用語 05 — 正当な利益アセスメント（LIA: Legitimate Interest Assessment）</span>
+        <p>組織が個人データをAIモデルの学習等に「正当な利益（GDPR第6条1項(f)）」を根拠として利用するにあたり、その目的の正当性、処理の必要性、データ主体の権利との調和、およびオプトアウトの可否などを事前に立証・文書化する評価フレームワーク。</p>
+        <p><em>根拠：CJEU Case C-621/22（2024年10月）、EDPB ガイドライン1/2024</em></p>
+      </div>
+
+      <div class="column">
+        <span class="column-label">用語 06 — 不利益影響比率（DIR: Disparate Impact Ratio）</span>
+        <p>AIモデルの出力（採用決定や融資実行など）において、特定グループに対するバイアス・不当な不均衡の有無を定量化するための指標。保護グループの選択率（合格率）を、参照グループの選択率で除した値であり、一般に4/5ルール（DIR &lt; 0.8）を下回る場合に不当な不利益が存在すると推定される。</p>
+        <p><em>関連：EU AI Act 第10条、非差別法（米国 EEOC ガイドライン等）</em></p>
+      </div>
+
+      <div class="column">
+        <span class="column-label">用語 07 — モデルカード（Model Cards）</span>
+        <p>開発された各AIモデルに付属する説明書であり、モデル詳細（バージョン、アーキテクチャ等）、意図された使用方法、評価メトリクスの選定理由、および多様なサブグループ別の評価結果をまとめた、透明性確保のための標準フォーマット。</p>
+        <p><em>提唱者：Mitchell et al.（Googleなど）</em></p>
+      </div>
+
+      <div class="column">
+        <span class="column-label">用語 08 — データシート（Datasheets for Datasets）</span>
+        <p>すべてのデータセットが、その目的、組成、収集プロセス、推奨される用途、およびメンテナンスについての詳細な回答を文書として伴うことを提唱した、透明性とアカウンタビリティを確保するための事実上のメタデータ標準規格。</p>
+        <p><em>提唱者：Gebru et al.</em></p>
+      </div>
+
+      <div class="column">
+        <span class="column-label">用語 09 — 適合性評価（Conformity Assessment）</span>
+        <p>AIシステム（特にEU AI Actの高リスクAIシステム）が、市場投入または運用開始の前に、法的に定められた要件（データガバナンス、技術文書、ログ記録、人的監視、頑健性、サイバーセキュリティなど）に完全に適合しているかを実証し、確認するプロセス。CEマーク取得の前提条件。</p>
+        <p><em>関連：EU AI Act 第11条、付属書IV</em></p>
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+<!-- ──────────── CHAPTER 7: QUIZ ──────────── -->
+<section id="ch7" class="chapter">
+
+  <div class="ch-header">
+    <div class="ch-number">Q</div>
+    <div class="ch-eyebrow">模擬試験問題</div>
+    <h2 class="ch-title">模擬試験問題および詳細解説</h2>
+    <p class="ch-lead">AIGP試験形式に準拠した5問の模擬問題。各問題には詳細解説と誤答の理由分析が付属している。正解の根拠を条文・判例・フレームワークレベルで理解すること。</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec-body">
+
+      <!-- Q1 -->
+      <div id="q1" class="quiz-q">
+        <div class="quiz-header">
+          <span class="quiz-num">問題 1 / 5</span>
+          <span class="quiz-topic">法的根拠とデータガバナンス</span>
+        </div>
+        <div class="quiz-body">
+          <p>米国のオンライン小売業者A社は、EU居住者の過去5年間のパーソナルな購買履歴データを一元的に収集し、新商品のレコメンド機能を自動生成するAIモデルを開発することに決定した。A社にはEU居住者と「直接のサービス提供契約」がある。A社の法務およびガバナンス担当者が、AIモデルの「学習（トレーニング）」フェーズにおけるデータの適法根拠をGDPRに基づいて選定する際、最も適切かつ法的リスクの低い対応はどれか。</p>
+          <ul class="quiz-options">
+            <li>
+              <span class="quiz-opt-label">A</span>
+              AIレコメンドは購買契約の実行そのものに「不可欠（Objective Necessity）」なパーソナライズサービスであるため、GDPR第6条1項(b)「契約の履行（Performance of a Contract）」を学習フェーズ全体の適法根拠とする。
+            </li>
+            <li class="correct">
+              <span class="quiz-opt-label">B</span>
+              AIモデルの学習はA社の「サービス品質向上」という明確な商業目標に基づくため、GDPR第6条1項(f)「正当な利益（Legitimate Interests）」を学習の適法根拠とし、事前にLIA（正当な利益評価）を文書化して実行する。
+            </li>
+            <li>
+              <span class="quiz-opt-label">C</span>
+              購買データ内のパーソナルデータを用いてレコメンドAIを学習することは完全に新しい目的外利用に該当するため、過去の契約に基づきすべての顧客に対してAI学習に対する「默示の同意（Implied Consent）」の表明があったものとして学習を即座に開始する。
+            </li>
+            <li>
+              <span class="quiz-opt-label">D</span>
+              GDPRはモデルの「推論フェーズ」のみに適用され、「学習フェーズ」におけるモデル内部処理に対してはいかなる法的根拠も必要としない。
+            </li>
+          </ul>
+          <div class="quiz-answer">
+            <span class="quiz-answer-title">正解 B — 解説</span>
+            <p><strong>Bが正しい理由：</strong>GDPRにおいて、AIモデルの学習（R&Dフェーズ）は、顧客が通常予期する「サービス契約の直接の履行」そのものとは別個の処理フェーズ（目的）として切り離して評価されるのが原則である。そのため、「契約の履行（b）」をAI学習の適法根拠とすることは困難である。さらに「默示の同意（C）」はGDPR上の有効な同意とは言えない。よって、商業的利益やAI改善の目的は「正当な利益（f）」に該当しうるが、これは「LIA（正当な利益評価）」を通じてPurpose（目的）、Necessity（必要性）、Balancing（バランス）の3段階を精査し、オプトアウト権利の保障を設けた上で根拠としなければならない。</p>
+            <p><strong>誤答の理由：</strong>AI学習は契約に客観的に不可欠とは言い難いためAは誤り。GDPR上の同意は明示的でなければならず、默示の同意による学習はGDPR違反となるためCは誤り。学習データ（トレーニングデータ）に個人データが含まれる限り、モデルの学習フェーズに対してもGDPRの適法根拠が不可欠であるためDは誤り。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div id="q2" class="quiz-q">
+        <div class="quiz-header">
+          <span class="quiz-num">問題 2 / 5</span>
+          <span class="quiz-topic">特別なカテゴリのデータと差別バイアステスト</span>
+        </div>
+        <div class="quiz-body">
+          <p>EU圏内で自動ローン審査を行う高リスクAIシステムを開発しているB社は、TEVV（テスト・評価・検証・妥当性確認）の段階で、AIシステムに「性別や人種に基づく差別的バイアス」が存在しないかを技術的にテストしようとしている。B社は、これらのバイアスを正確に検出・補正するために、顧客登録者の「人種、宗教、性的指向」などの極めて敏感なデータ（GDPR上の特別なカテゴリのデータ）をモデルに入力して公平性メトリクスを測定したいと考えている。この処理は適法か。</p>
+          <ul class="quiz-options">
+            <li>
+              <span class="quiz-opt-label">A</span>
+              GDPR第9条1項に基づき、特別なカテゴリの個人データの処理はいかなる目的であっても例外なく全面禁止されているため、バイアステストであってもこのデータを利用することは違法である。
+            </li>
+            <li class="correct">
+              <span class="quiz-opt-label">B</span>
+              EU AI Act 第10条5項に基づき、バイアスの検出と修正に厳格に必要であり、適切なセキュリティ管理策およびプライバシー強化技術（PETs等）が適用されていることを前提として、例外的にこれらを処理できる。
+            </li>
+            <li>
+              <span class="quiz-opt-label">C</span>
+              ローン審査AIは高リスクに分類されるため、特別なカテゴリのデータを「同意なし」に自由かつ制限なくモデルのファインテューニングや継続的学習（R&D）のすべてに利用してよいとするのがAI法の優先特権である。
+            </li>
+            <li>
+              <span class="quiz-opt-label">D</span>
+              AI法はGDPRを完全に廃止（上書き）したため、AI法第10条に適合する高リスクAIであれば、GDPRの重大な公共の利益などの条件を満たす必要はない。
+            </li>
+          </ul>
+          <div class="quiz-answer">
+            <span class="quiz-answer-title">正解 B — 解説</span>
+            <p><strong>Bが正しい理由：</strong>EU AI Act 第10条5項は、高リスクAIシステムにおけるバイアスの検出と修正を「重大な公共の利益（GDPR第9条2項(g)）」と認めている。これにより、他に代替手段がない場合に限り、「極めて必要最小限の範囲（厳格に必要な範囲）」かつ「プライバシー保護および強固なセキュリティ（データ漏洩防止等）」を適用した上で、特別なカテゴリの個人データを処理することが例外的に認められている。</p>
+            <p><strong>誤答の理由：</strong>GDPR第9条2項には重大な公共の利益等による例外規定があるためAは誤り。AI法は目的を「バイアスの検出と修正」のみに厳格に制限しており、通常の自由な学習への制限なき利用は許容されないためCは誤り。AI法とGDPRは並行適用され、衝突した場合はGDPRが優先するためDは誤り。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div id="q3" class="quiz-q">
+        <div class="quiz-header">
+          <span class="quiz-num">問題 3 / 5</span>
+          <span class="quiz-topic">自動意思決定と人間による有意義な監視</span>
+        </div>
+        <div class="quiz-body">
+          <p>C社は、新卒採用選考プロセスの初期段階において、応募者のレジュメをPDFから抽出し、適性を自動スコアリングするAIツールを導入した。AIツールの仕様書には「本ツールはアシスタント（補助）として動作し、最終的な不採用・採用選考決定は人間のHRマネージャーが署名（サイン）する」と記載されている。しかし、実運用の調査の結果、HRマネージャーは多忙を極めており、AIが提示したスコアや「不採用推奨」のフラグを何も疑わずにそのままコピー＆ペーストして処理している（ラバースタンプ状態）ことが判明した。この運用の法的評価として、最も適切なものはどれか。</p>
+          <ul class="quiz-options">
+            <li>
+              <span class="quiz-opt-label">A</span>
+              人間のHRマネージャーが決定フォームに署名（承認）しているため、本プロセスには人間の関与が存在しており、GDPR第22条1項の「単に自動化された処理のみに基づく決定（Solely Automated Decision-making）」には該当せず、第22条の制限を一切受けない。
+            </li>
+            <li>
+              <span class="quiz-opt-label">B</span>
+              最終決定がAI単独ではなく「人間とAIの協調」によって形式的になされているため、GDPR上の法的リスクはなく、解釈可能性テストを追加で実施する必要もない。
+            </li>
+            <li class="correct">
+              <span class="quiz-opt-label">C</span>
+              形式的な署名があるものの、人間がモデルの限界や説明（SHAPなど）を評価しておらず、実質的にAIの推奨をそのまま追認しているため、欧州司法裁判所（CJEU）の判例（SCHUFA判決等）やEDPBガイドラインに照らすと「自動意思決定」に該当し、GDPR第22条の制限を課される。
+            </li>
+            <li>
+              <span class="quiz-opt-label">D</span>
+              応募者は新卒採用に応募することでAIツールにレジュメを提出しているため、この応募プロセスそのものがGDPR第22条2項(c)の「明示的な同意（Explicit Consent）」を代替する。
+            </li>
+          </ul>
+          <div class="quiz-answer">
+            <span class="quiz-answer-title">正解 C — 解説</span>
+            <p><strong>Cが正しい理由：</strong>形式的な人間のサインがあっても、その署名者に「AIの決定限界を理解し、AIの説明（解釈可能性ツール等）を評価し、独立した判断力を持って決定を実質的に上書き（Override）する能力と時間、権限」がない場合（ラバースタンプ）、実質的に「自動決定（Solely Automated Decision-making）」とみなされる。これは2023年のCJEU「SCHUFA判決」などで示された厳格な法的判断と整合する。したがって、第22条1項が適用され、明示的同意や契約上の不可欠性、および異議申立権等の厳格なセーフガードが義務づけられる。</p>
+            <p><strong>誤答の理由：</strong>ラバースタンプを容認する解釈であるためAおよびBは誤り。単なるレジュメ提出は「明示的な同意（Explicit Consent）」の極めて厳格な要件（自由な意思、具体的な同意、撤回可能であること等の文書化）を満たさないためDは誤り。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div id="q4" class="quiz-q">
+        <div class="quiz-header">
+          <span class="quiz-num">問題 4 / 5</span>
+          <span class="quiz-topic">データプロベナンスとリネージの監査</span>
+        </div>
+        <div class="quiz-body">
+          <p>独立外部監査人が、D社が開発した自動運転システムに使用されている「障害物検出用ディープラーニングモデル」のデータ監査を実施している。監査人は、「このモデルの特定の特徴量を生成するために、どのオリジナル画像データベースから何時にデータが取得され、どのようなクロッピング（アノテーション）作業が誰の承認によってなされたか。また、それはGDPRのプライバシー原則、および適切なライセンス権限に基づいているか」を調査したいと考えている。この要求を満たすために、ガバナンスプロフェッショナルが監査人に提示すべき、最も焦点を当てた文書およびデータタイプはどれか。</p>
+          <ul class="quiz-options">
+            <li>
+              <span class="quiz-opt-label">A</span>
+              Pythonのトレーニングコードリポジトリ、およびカラム単位のデータベーススキーマ（データフローリネージ）
+            </li>
+            <li class="correct">
+              <span class="quiz-opt-label">B</span>
+              データの起点、作成者、監査人の検証可能な利用権、および変換の操作履歴を記録した「データプロベナンス（Data Provenance）」および対応するデータシート（Datasheets for Datasets）
+            </li>
+            <li>
+              <span class="quiz-opt-label">C</span>
+              AIシステムの推論レイテンシテストログ、およびサーバーのスループットレポート（性能テスト文書）
+            </li>
+            <li>
+              <span class="quiz-opt-label">D</span>
+              LIME/SHAPの数値モデル重みダンプシート（解釈可能性テスト結果）
+            </li>
+          </ul>
+          <div class="quiz-answer">
+            <span class="quiz-answer-title">正解 B — 解説</span>
+            <p><strong>Bが正しい理由：</strong>監査人が要求している情報は、単なるシステムの技術的な「データフローやデータ遷移（リネージ）」ではない。データの「オリジン（起点）」、「作成者（誰が）」、「法的妥当性・ライセンス権限の連鎖（GDPR・同意）」、「信頼性の履歴」であり、これらはまさに「データプロベナンス（Data Provenance）」とこれらを表現する「データシート（Datasheets for Datasets）」に該当する。</p>
+            <p><strong>誤答の理由：</strong>Aはデータの流れ（リネージ）を技術的に追跡するものであり、法的・ガバナンス的な出所や作成者の証明（プロベナンス）には不十分であるため誤り。Cは性能テスト情報であり、データの法的コンプライアンスや調達履歴の証明とは無関係なため誤り。Dは推論の解釈可能性アトリビューションであり、データソースの起点・利用権限の監査要件は満たせないため誤り。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div id="q5" class="quiz-q">
+        <div class="quiz-header">
+          <span class="quiz-num">問題 5 / 5</span>
+          <span class="quiz-topic">人間を対象とするAIテストの倫理</span>
+        </div>
+        <div class="quiz-body">
+          <p>E社は、新しい音声認識AIモデルを構築し、NIST AI RMFの「MEASURE（測定）」機能およびGDPRに準拠したテスト計画（TEVV）を実施しようとしている。本テストにおいては、モデルの「多様な年齢・アクセント（方言）・民族性に対する正確性（汎化性能）」を正確に測定するため、実際に多数の「被験者（人間主体）」から取得した音声録音データや人口統計学的データを使用する。本テスト計画におけるガバナンス上の必須条件として、最も不適切な記述（間違い）はどれか。</p>
+          <ul class="quiz-options">
+            <li>
+              <span class="quiz-opt-label">A</span>
+              被験者保護（Human Subject Protection）を確実にするため、Belmont Report（ベルモント・レポート）の原則（尊重、善行、正義）に準拠したインフォームドコンセントおよび適切な補償を実施する。
+            </li>
+            <li>
+              <span class="quiz-opt-label">B</span>
+              収集した音声データおよび対応するメタデータはプライバシーリスクがあるため、アノニマイゼーション（匿名化）や、特定の被験者と音声データを容易に紐付けられないような差分プライバシー等の技術を評価データにも適用する。
+            </li>
+            <li class="correct">
+              <span class="quiz-opt-label">C</span>
+              評価の正確性を高めるために、被験者が事前に提供した「同意（Consent）」は、一度収集された後は、被験者の自由な意思によって「将来に向け撤回」されたり、データ削除を求められたりしても、テストの一貫性を理由に拒否できる。
+            </li>
+            <li>
+              <span class="quiz-opt-label">D</span>
+              評価データが現実世界の運用コンテクスト（Context of Use）におけるユーザー比率と大幅に乖離（非代表性）していないか、偏り（データギャップ）を検出するためのサブグループ別解釈・バイアステスト（Disaggregated Evaluation）を適用する。
+            </li>
+          </ul>
+          <div class="quiz-answer">
+            <span class="quiz-answer-title">正解 C（不適切な記述）— 解説</span>
+            <p><strong>Cが不適切な理由：</strong>個人データの保護（GDPR等）および人間を対象とする研究倫理（被験者保護）においては、被験者（データ主体）はいつでも自由かつ不利益なしに「同意を撤回（Revoke Consent）」する権利を保障される必要がある。また、GDPR第17条（消去権／忘れられる権利）に基づき、個人データの削除請求があった場合、合理的な例外がない限りモデルテストからその被験者のデータを完全に排除（消去）できなければならない。したがって、「テストの一貫性」を理由に同意の撤回やデータ削除の請求を拒否することは不適切（違法・倫理違反）である。</p>
+            <p><strong>適切な記述（A・B・D）の理由：</strong>人間を対象とする評価・テストにおいては、Belmont Reportの原則（尊重、善行、正義）に従うことが必須であるためAは適切。プライバシーリスク（モデル反転攻撃など）を防ぐために差分プライバシーやアノニマイゼーションが推奨されるためBは適切。データの偏りを防ぎ特定人口統計グループに対する精度崩壊を防ぐためにはdisaggregated evaluation（サブグループ別評価）が必須となるためDは適切。</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+<!-- ──────────── REFERENCES ──────────── -->
+<section id="references">
+  <h2>引用文献</h2>
+  <ol class="ref-list">
+    <li>IAPP AIGP Certification Body of Knowledge v2.1（aigp_cert_bok_final_012925_201.pdf）</li>
+    <li>AIGP BODY OF KNOWLEDGE AND EXAM BLUEPRINT — QA: <a href="https://www.qa.com/media/gs5nm5xv/aigp_cert_bok_final_012925_201.pdf" target="_blank">https://www.qa.com/media/gs5nm5xv/aigp_cert_bok_final_012925_201.pdf</a></li>
+    <li>AIGP Certification: What It Costs, What It Pays, and Who Should Get It — Training Camp: <a href="https://trainingcamp.com/articles/aigp-certification-what-it-costs-what-it-pays-and-who-should-get-it/" target="_blank">trainingcamp.com</a></li>
+    <li>AIGP Certification Guide 2026 — FlashGenius: <a href="https://flashgenius.net/blog-article/aigp-certification-guide-2025-master-ai-governance-and-responsible-ai" target="_blank">flashgenius.net</a></li>
+    <li>IAPP AIGP Certification: AI Governance Career Guide &amp; Salary Data 2026 — Tech Jacks Solutions</li>
+    <li>AIGP Exam: AI Integrity &amp; Privacy Practices — Scribd</li>
+    <li>Article 10: Data and Data Governance — EU Artificial Intelligence Act: <a href="https://artificialintelligenceact.eu/article/10/" target="_blank">artificialintelligenceact.eu</a></li>
+    <li>What is the 'legitimate interests' basis? — ICO: <a href="https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/lawful-basis/legitimate-interests/" target="_blank">ico.org.uk</a></li>
+    <li>How do we ensure lawfulness in AI? — ICO</li>
+    <li>Does AI Processing Require Explicit Consent Under GDPR? — Samexpert</li>
+    <li>12 Critical Updates for Your AIGP Certification — 22Academy</li>
+    <li>How to Use Legitimate Interest as a GDPR Legal Basis — Usercentrics</li>
+    <li>GDPR for AI Developers 2026 Compliance Guide — Medium</li>
+    <li>Permitted by design? Article 10(5) AIA, sensitive data — Oxford Academic IDPL</li>
+    <li>Algorithmic discrimination under the AI Act and the GDPR — European Parliament</li>
+    <li>AI Data Governance: Provenance, Quality, and Model Lineage — Elevate Consult</li>
+    <li>Data Provenance vs. Data Lineage — Snowflake</li>
+    <li>Data Lineage vs Data Provenance — OvalEdge</li>
+    <li>What Is Data Lineage? — IBM</li>
+    <li>AI Auditor: Complete Guide to AI Governance 2026 — Tech Jacks Solutions</li>
+    <li>Top AI Security Specialist Interview Questions — InfosecTrain</li>
+    <li>Rights related to automated decision making — ICO</li>
+    <li>Automated Decision Making: Overview of GDPR Article 22 — GDPR Local</li>
+    <li>What US Employers Need to Know About AI Hiring Bias Laws — Fisher Phillips</li>
+    <li>Human in the Loop: AI Compliance and Oversight Requirements — Kiteworks</li>
+    <li>Helping Hand Or Complete Control? AI In Recruitment In The EU And UK — Ropes &amp; Gray</li>
+    <li>Creating Harmony: AI Governance Playbook — Ward and Smith, P.A.</li>
+    <li>AI governance tools: the 2026 enterprise buyer's guide — Modulos</li>
+    <li>AWS AI Practitioner Question 18: Detecting Bias in Machine Learning Models — YouTube</li>
+  </ol>
+</section>
+
+</main>
+
+</body>
+</html>
