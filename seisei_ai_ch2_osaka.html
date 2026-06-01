@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第2章 生成AIの歴史｜生成AIのしくみ「流れ」（大阪弁版）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0d0d0d; --ink2: #2c2c2c; --ink3: #666;
+  --paper: #fafaf8; --paper2: #f2f0eb; --paper3: #e8e4dc;
+  --rule: rgba(0,0,0,0.12); --rule2: rgba(0,0,0,0.06);
+  --accent: #c8102e; --accent2: #a00d24;
+  --accent-light: rgba(200,16,46,0.07);
+  --sidebar: 272px;
+  --serif: 'Cormorant Garamond','Noto Serif JP',serif;
+  --sans: 'Noto Sans JP',sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink:#f0ece4;--ink2:#ccc5b9;--ink3:#888;
+    --paper:#141210;--paper2:#1c1916;--paper3:#24201c;
+    --rule:rgba(255,255,255,0.1);--rule2:rgba(255,255,255,0.05);
+    --accent:#e8304a;--accent2:#ff4d65;
+    --accent-light:rgba(232,48,74,0.1);
+  }
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.8;-webkit-font-smoothing:antialiased}
+#prog{position:fixed;top:0;left:0;height:2px;width:0%;background:var(--accent);z-index:200;transition:width .1s linear}
+#nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;background:var(--paper2);border-right:1px solid var(--rule);overflow-y:auto;z-index:100;display:flex;flex-direction:column;padding:0 0 2rem}
+.nav-masthead{padding:2.2rem 1.6rem 1.6rem;border-bottom:1px solid var(--rule);margin-bottom:.8rem}
+.nav-series{font-family:var(--serif);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:.4rem}
+.nav-title{font-family:var(--serif);font-size:1.05rem;font-weight:500;color:var(--ink);line-height:1.45;margin-bottom:.35rem}
+.nav-author{font-size:.72rem;color:var(--ink3);font-weight:300}
+.nav-dialect{display:inline-block;font-size:.65rem;background:var(--accent);color:#fff;padding:.15rem .45rem;border-radius:2px;margin-top:.3rem;letter-spacing:.05em}
+.nav-chapters{padding:0 .8rem}
+.nav-ch{display:flex;align-items:baseline;gap:.6rem;padding:.55rem .8rem;border-radius:3px;text-decoration:none;color:var(--ink2);font-size:.78rem;font-weight:400;line-height:1.4;transition:background .15s,color .15s;position:relative}
+.nav-ch::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:0;height:60%;background:var(--accent);border-radius:0 2px 2px 0;transition:width .15s}
+.nav-ch:hover{background:var(--paper3);color:var(--ink)}
+.nav-ch.active{color:var(--accent);font-weight:500}
+.nav-ch.active::before{width:3px}
+.nav-ch-num{font-family:var(--serif);font-style:italic;font-size:.72rem;color:var(--ink3);flex-shrink:0;min-width:1.2rem}
+.nav-sub{display:block;padding:.28rem .8rem .28rem 2.8rem;text-decoration:none;color:var(--ink3);font-size:.7rem;line-height:1.4;transition:color .15s;border-left:1px solid var(--rule);margin-left:1rem;margin-top:.1rem}
+.nav-sub:hover{color:var(--ink)}
+.nav-sub.active{color:var(--accent);border-left-color:var(--accent)}
+#main{margin-left:var(--sidebar);min-height:100vh}
+#cover{padding:7rem 5vw 5rem;max-width:820px;border-bottom:1px solid var(--rule)}
+.cover-eyebrow{font-family:var(--serif);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem}
+.cover-num{font-family:var(--serif);font-style:italic;font-size:7rem;font-weight:400;line-height:.85;color:var(--accent);opacity:.18;display:block;margin-bottom:-1rem}
+.cover-title{font-family:var(--serif);font-size:clamp(2.2rem,5vw,3.4rem);font-weight:600;line-height:1.15;color:var(--ink);margin-bottom:1rem;letter-spacing:-.01em}
+.cover-badge{display:inline-block;font-size:.72rem;background:var(--accent);color:#fff;padding:.25rem .75rem;border-radius:2px;margin-bottom:1.2rem;letter-spacing:.08em;font-family:var(--sans);font-weight:500}
+.cover-rule{width:3rem;height:2px;background:var(--accent);margin-bottom:1.6rem}
+.cover-lead{font-family:var(--serif);font-style:italic;font-size:1.12rem;line-height:1.75;color:var(--ink2);max-width:580px}
+.article{padding:0 5vw 6rem;max-width:820px}
+.sec{margin-top:3.5rem}
+.sec-title{font-family:var(--serif);font-size:1.45rem;font-weight:500;color:var(--ink);line-height:1.3;margin-bottom:1.4rem;padding-top:.2rem;position:relative;padding-left:1.1rem}
+.sec-title::before{content:'';position:absolute;left:0;top:.15em;width:4px;height:1em;background:var(--accent)}
+p{font-size:.965rem;line-height:1.95;color:var(--ink2);margin-bottom:1.1rem;text-align:justify}
+.pullquote{font-family:var(--serif);font-style:italic;font-size:1.2rem;line-height:1.65;color:var(--ink);border-left:3px solid var(--accent);padding:.8rem 1.4rem;margin:2rem 0;background:var(--accent-light)}
+.callout{background:var(--paper2);border-left:3px solid var(--accent);padding:1rem 1.3rem;margin:1.6rem 0;font-size:.88rem;line-height:1.8;color:var(--ink2)}
+.callout p{margin-bottom:.5rem;font-size:.88rem}
+.callout p:last-child{margin-bottom:0}
+.column{border:1px solid var(--rule);border-top:3px solid var(--accent);margin:2.5rem 0;background:var(--paper2)}
+.col-head{font-family:var(--sans);font-size:.7rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);padding:.75rem 1.3rem .6rem;border-bottom:1px solid var(--rule)}
+.col-body{padding:1.2rem 1.3rem}
+.col-body p{font-size:.875rem;line-height:1.85;color:var(--ink2);margin-bottom:.7rem}
+.col-body p:last-child{margin-bottom:0}
+.fig{margin:2rem 0}
+.fig-cap{font-size:.75rem;color:var(--ink3);font-weight:500;letter-spacing:.05em;margin-bottom:.6rem;border-bottom:1px solid var(--rule);padding-bottom:.4rem}
+.fig svg{display:block;width:100%;max-width:420px}
+.summary{background:var(--paper2);border:1px solid var(--rule);border-top:3px solid var(--accent);padding:1.8rem 2rem;margin-top:4rem}
+.summary h3{font-family:var(--serif);font-size:1.1rem;font-weight:600;color:var(--ink);margin-bottom:1rem}
+.summary ul{list-style:none;padding:0}
+.summary ul li{font-size:.875rem;line-height:1.75;color:var(--ink2);padding:.4rem 0 .4rem 1.2rem;border-bottom:1px solid var(--rule2);position:relative}
+.summary ul li:last-child{border-bottom:none}
+.summary ul li::before{content:'—';position:absolute;left:0;color:var(--accent);font-family:var(--serif)}
+#menu-btn{display:none;position:fixed;top:1rem;left:1rem;z-index:150;background:var(--paper2);border:1px solid var(--rule);border-radius:3px;width:2.4rem;height:2.4rem;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+#menu-btn span{display:block;width:18px;height:1.5px;background:var(--ink);transition:all .2s}
+#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:90}
+@media(max-width:960px){
+  :root{--sidebar:260px}
+  #nav{transform:translateX(-100%);transition:transform .25s ease}
+  #nav.open{transform:translateX(0)}
+  #overlay.open{display:block}
+  #menu-btn{display:flex}
+  #main{margin-left:0}
+  #cover{padding:5rem 1.4rem 3rem}
+  .article{padding:0 1.4rem 4rem}
+  .cover-num{font-size:5rem}
+}
+@media(max-width:480px){
+  #cover{padding:4.5rem 1rem 2.5rem}
+  .article{padding:0 1rem 3rem}
+  .cover-title{font-size:2rem}
+  .sec-title{font-size:1.2rem}
+  p{font-size:.93rem}
+}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<button id="menu-btn" aria-label="メニューを開く"><span></span><span></span><span></span></button>
+<div id="overlay"></div>
+
+<nav id="nav" aria-label="章ナビゲーション">
+  <div class="nav-masthead">
+    <div class="nav-series">岩波科学ライブラリー</div>
+    <div class="nav-title">生成AIのしくみ「流れ」</div>
+    <div class="nav-author">岡野原大輔 著</div>
+    <div class="nav-dialect">大阪弁版</div>
+  </div>
+  <div class="nav-chapters">
+    <a class="nav-ch active" href="#cover">
+      <span class="nav-ch-num">2</span>生成AIの歴史
+    </a>
+    <a class="nav-sub active" href="#sec-memory">記憶のしくみ</a>
+    <a class="nav-sub" href="#sec-hopfield">イジングモデルからホップフィールドネットワークへ</a>
+    <a class="nav-sub" href="#sec-ebm">エネルギーベースモデルとは</a>
+    <a class="nav-sub" href="#sec-associative">連想記憶の自然な実現</a>
+    <a class="nav-sub" href="#sec-boltzmann">ボルツマン分布</a>
+    <a class="nav-sub" href="#sec-langevin">ランジュバン・モンテカルロ法</a>
+    <a class="nav-sub" href="#sec-problems">エネルギーベースモデルの致命的な問題</a>
+    <a class="nav-sub" href="#col-simulator">コラム：現実世界は超巨大なシミュレーター</a>
+    <a class="nav-sub" href="#sec-partition">分配関数</a>
+    <a class="nav-sub" href="#sec-latent">データは隠れた情報から生成されている</a>
+    <a class="nav-sub" href="#sec-helmholtz">生成するためには認識が必要</a>
+    <a class="nav-sub" href="#sec-vae">変分自己符号化器（VAE）</a>
+    <a class="nav-sub" href="#sec-vae-problems">潜在変数モデルの問題</a>
+    <a class="nav-sub" href="#col-gan">コラム：GAN</a>
+    <a class="nav-sub" href="#col-ar">コラム：自己回帰モデル</a>
+    <a class="nav-sub" href="#col-nobel">コラム：ノーベル賞2024年</a>
+    <a class="nav-sub" href="#sec-summary">まとめ</a>
+  </div>
+</nav>
+
+<main id="main">
+<div id="cover">
+  <div class="cover-eyebrow">Chapter Two</div>
+  <span class="cover-num" aria-hidden="true">2</span>
+  <h1 class="cover-title">生成ＡＩの歴史</h1>
+  <div class="cover-badge">大阪弁版</div>
+  <div class="cover-rule"></div>
+  <p class="cover-lead">ＡＩによってデータを生成しようという試みには長い積み重ねがあったんや。そもそも生成とは何なのか、何をどのように学習すればよいのかについて、少しずつ理解が進んできたわけやな。この章ではこの数十年の取り組みの歴史を紹介し、どのように進展してきたのかを述べるで。</p>
+</div>
+
+<article class="article">
+
+<!-- ── 記憶のしくみ ── -->
+<section class="sec" id="sec-memory">
+  <h2 class="sec-title">記憶のしくみ</h2>
+  <p>データを生成する最初の試みは、人間の記憶のしくみの再現から進んだんや。</p>
+  <p>人は一度見たり聞いたりしたものを頭の中で再現することができるやろ。また、それらをもとに新しい状況を想像することもできる。例えば、月の上でうさぎが餠をついている様子を頭の中で想像してみてほしいんやけど。この場合、その状況を一度もみたことがなくても、月やうさぎ、人が餠をついている過去の記憶をつなぎ合わせることで、この状況を想像することができてるわけや。このように何かを生成するという場合、過去の記憶を思い出す能力、そしてそれらを操作する能力が求められるんやな。</p>
+  <p>計算機はデータを正確に保存するのが得意で、一度覚えたデータを誤りなく永遠に保存することができるわ。計算機は大量のデータを正確に記憶する点では、人間よりもはるかに優れてるといってええやろ。</p>
+  <p>しかし、記憶したことを必要に応じて思い出す能力になるとどうやろか。人間は連想記憶が得意で、何かを考えているときに関連する事柄やイベントを思い出すことができるんや。記憶は個別に格納されず、お互いネットワークのような形でつながってるわけやな。そして、ある刺激をきっかけとして、関連する情報を思い出すしくみを備えてるんや。</p>
+  <p>このように、記憶という能力は、単に保存する能力にとどまらず、思い出す能力とセットになってて、両方が実現されて初めて自由自在に過去の記憶をあつかうことができるんやで。人も何かを忘れる場合には、記憶自体が失われるためだけでなく、それを思い出す方法が失われるために忘れてしまう場合が多いと考えられてるんや。</p>
+  <p>計算機は、このような刺激に応じて関連することを思い出すというしくみをもともと備えてなくて、あらかじめ決められた方法、手順でしかデータを思い出すことはできへん。例えば「運動会」というキーワードから、人は様々な運動会に関連する記憶（映像、音、転んだ時の痛みなど）を思い出すことができるけど、計算機では同じような記憶のしくみをそのままでは実現できへんのや。</p>
+</section>
+
+<!-- ── イジングモデルからホップフィールドネットワークへ ── -->
+<section class="sec" id="sec-hopfield">
+  <h2 class="sec-title">イジングモデルからホップフィールドネットワークへ</h2>
+  <p>計算機に、人と同じように入力の刺激に応じて関連する記憶を思い出すしくみを導入する試みは、早くから行なわれてきたんや。その実現に用いられたのは、物理現象を理解するために提案されたイジングモデル（またはイジング模型）やねん（図13）。</p>
+
+  <div class="fig">
+    <div class="fig-cap">図13：イジングモデル — 格子状に並んだスピンの概念図</div>
+    <svg viewBox="0 0 320 180" style="height:180px" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="up" markerWidth="6" markerHeight="10" refX="3" refY="5" orient="auto">
+          <path d="M1,8 L3,2 L5,8" fill="none" stroke="#c8102e" stroke-width="1.2"/>
+        </marker>
+        <marker id="dn" markerWidth="6" markerHeight="10" refX="3" refY="5" orient="auto">
+          <path d="M1,2 L3,8 L5,2" fill="none" stroke="#4a90d9" stroke-width="1.2"/>
+        </marker>
+      </defs>
+      <!-- grid lines -->
+      <line x1="40" y1="40" x2="280" y2="40" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="40" y1="90" x2="280" y2="90" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="40" y1="140" x2="280" y2="140" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="40" y1="40" x2="40" y2="140" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="100" y1="40" x2="100" y2="140" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="160" y1="40" x2="160" y2="140" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="220" y1="40" x2="220" y2="140" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="280" y1="40" x2="280" y2="140" stroke="var(--rule)" stroke-width="1"/>
+      <!-- spin circles + arrows: row1 -->
+      <circle cx="40"  cy="40" r="14" fill="rgba(200,16,46,0.1)" stroke="#c8102e" stroke-width="1.2"/>
+      <line x1="40" y1="50" x2="40" y2="30" stroke="#c8102e" stroke-width="2" marker-end="url(#up)"/>
+      <circle cx="100" cy="40" r="14" fill="rgba(200,16,46,0.1)" stroke="#c8102e" stroke-width="1.2"/>
+      <line x1="100" y1="50" x2="100" y2="30" stroke="#c8102e" stroke-width="2" marker-end="url(#up)"/>
+      <circle cx="160" cy="40" r="14" fill="rgba(74,144,217,0.1)" stroke="#4a90d9" stroke-width="1.2"/>
+      <line x1="160" y1="30" x2="160" y2="50" stroke="#4a90d9" stroke-width="2" marker-end="url(#dn)"/>
+      <circle cx="220" cy="40" r="14" fill="rgba(200,16,46,0.1)" stroke="#c8102e" stroke-width="1.2"/>
+      <line x1="220" y1="50" x2="220" y2="30" stroke="#c8102e" stroke-width="2" marker-end="url(#up)"/>
+      <circle cx="280" cy="40" r="14" fill="rgba(200,16,46,0.1)" stroke="#c8102e" stroke-width="1.2"/>
+      <line x1="280" y1="50" x2="280" y2="30" stroke="#c8102e" stroke-width="2" marker-end="url(#up)"/>
+      <!-- row2 -->
+      <circle cx="40"  cy="90" r="14" fill="rgba(74,144,217,0.1)" stroke="#4a90d9" stroke-width="1.2"/>
+      <line x1="40" y1="80" x2="40" y2="100" stroke="#4a90d9" stroke-width="2" marker-end="url(#dn)"/>
+      <circle cx="100" cy="90" r="14" fill="rgba(200,16,46,0.1)" stroke="#c8102e" stroke-width="1.2"/>
+      <line x1="100" y1="100" x2="100" y2="80" stroke="#c8102e" stroke-width="2" marker-end="url(#up)"/>
+      <circle cx="160" cy="90" r="14" fill="rgba(200,16,46,0.1)" stroke="#c8102e" stroke-width="1.2"/>
+      <line x1="160" y1="100" x2="160" y2="80" stroke="#c8102e" stroke-width="2" marker-end="url(#up)"/>
+      <circle cx="220" cy="90" r="14" fill="rgba(74,144,217,0.1)" stroke="#4a90d9" stroke-width="1.2"/>
+      <line x1="220" y1="80" x2="220" y2="100" stroke="#4a90d9" stroke-width="2" marker-end="url(#dn)"/>
+      <circle cx="280" cy="90" r="14" fill="rgba(200,16,46,0.1)" stroke="#c8102e" stroke-width="1.2"/>
+      <line x1="280" y1="100" x2="280" y2="80" stroke="#c8102e" stroke-width="2" marker-end="url(#up)"/>
+      <!-- row3 -->
+      <circle cx="40"  cy="140" r="14" fill="rgba(200,16,46,0.1)" stroke="#c8102e" stroke-width="1.2"/>
+      <line x1="40" y1="150" x2="40" y2="130" stroke="#c8102e" stroke-width="2" marker-end="url(#up)"/>
+      <circle cx="100" cy="140" r="14" fill="rgba(74,144,217,0.1)" stroke="#4a90d9" stroke-width="1.2"/>
+      <line x1="100" y1="130" x2="100" y2="150" stroke="#4a90d9" stroke-width="2" marker-end="url(#dn)"/>
+      <circle cx="160" cy="140" r="14" fill="rgba(200,16,46,0.1)" stroke="#c8102e" stroke-width="1.2"/>
+      <line x1="160" y1="150" x2="160" y2="130" stroke="#c8102e" stroke-width="2" marker-end="url(#up)"/>
+      <circle cx="220" cy="140" r="14" fill="rgba(200,16,46,0.1)" stroke="#c8102e" stroke-width="1.2"/>
+      <line x1="220" y1="150" x2="220" y2="130" stroke="#c8102e" stroke-width="2" marker-end="url(#up)"/>
+      <circle cx="280" cy="140" r="14" fill="rgba(74,144,217,0.1)" stroke="#4a90d9" stroke-width="1.2"/>
+      <line x1="280" y1="130" x2="280" y2="150" stroke="#4a90d9" stroke-width="2" marker-end="url(#dn)"/>
+      <!-- legend -->
+      <circle cx="60" cy="168" r="6" fill="rgba(200,16,46,0.15)" stroke="#c8102e" stroke-width="1"/>
+      <text x="70" y="172" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#c8102e">上向き（+1）</text>
+      <circle cx="175" cy="168" r="6" fill="rgba(74,144,217,0.15)" stroke="#4a90d9" stroke-width="1"/>
+      <text x="185" y="172" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#4a90d9">下向き（−1）</text>
+    </svg>
+  </div>
+
+  <p>イジングモデルは１９２０年にドイツの物理学者ヴィルヘルム・レンツおよび彼の指導学生エルンスト・イジングによって考案されたんや。イジングモデルは、結晶構造のように格子状に並んだ多数の粒子をあつかうモデルやねん。各粒子はスピンとよばれる状態をもち、上向きか下向きかの２状態のどちらかをとる。このモデルでは、各粒子の状態にもとづいて全体のエネルギーが定義されるわけや。エネルギーは隣接する粒子の向きが揃っているほど低くなり、また、粒子ごとにどちらの向きの方がエネルギーが低くなるかが決まってる。この２つの合計として全体のエネルギーが定義されるんやな。</p>
+  <p>このように定義されたエネルギーをもとに、イジングモデルにおける各粒子の状態は、全体のエネルギーが低くなる方向に自発的に変化するんや。この際、粒子は隣接する粒子と同じ向きになりたいという目標と、粒子ごとに定められたエネルギーが低くなる状態になりたいという目標の２つにもとづいて、状態の調整がなされる。イジングモデルは実際の物理現象を単純化したモデルやけど、このモデルをつかって物体の状態が急激に変わる現象である相転移や磁性体など、様々な物理現象を調べることができるんや。</p>
+  <p>イジングモデルのしくみを用いて、ニューラルネットワーク（巻末付録参照）をつかって記憶をあつかおうとする試みは、１９７１年に中野薫、１９７２年に甘利俊一によって最初になされたんや。１９８２年にはジョン・ホップフィールドによって再提案され、その理論的なしくみが解明されると共に広く注目されるようになった（本章末のコラム「ノーベル賞２０２４年」参照）。このネットワークは現在、ホップフィールドネットワークとよばれとるんや。</p>
+  <p>ホップフィールドネットワークでは、各ニューロンがイジングモデルにおける粒子の役割を果たし、ニューロンの状態とデータの各次元の値が対応するわけや。そして、イジングモデルと同様に、ニューロン間の相互作用やニューロンごとの状態に応じて全体のエネルギーが定義されるんや。ニューロンは全体のエネルギーが低くなるように自発的に変化していき、エネルギーがより低い状態に到達することを目指すわけやな。</p>
+  <p>イジングモデルとホップフィールドネットワークの大きな違いは、イジングモデルでは粒子間の相互作用や粒子ごとに好まれる状態は外から定義して与えていたのに対し、ホップフィールドネットワークではこれらがパラメータとして学習によって決まる点やねん。具体的には、観測したデータに対応する状態になったときにエネルギーが低くなるようにパラメータが更新される（図14）。逆に、観測していないデータに対応する状態のエネルギーが相対的に高くなるようにするんや。この更新は、ヘブ則とよばれる更新則に従ってニューロン間の重みを書き換えていくことで達成されるわけや。</p>
+  <p>そして、新たにデータを生成する際はニューロンの状態を適当に初期化し、エネルギーが低くなるようにニューロンの状態を更新していくことで、学習時にみたようなデータを生成できるんや。初期値に応じて、エネルギーの低い異なる状態に到達し、学習時にみた様々なデータを思い出すことができるんやで。</p>
+  <p>この場合、必ずしも学習データとまったく同じデータではなく、異なる新しいデータを生成するようにもなるんや。パラメータを更新する際に、他の様々な異なる状態のエネルギーも同時に低くなっているためやねん。機械学習における汎化（巻末付録参照）と同じことがおきてるわけや。</p>
+  <p>なお、脳内の神経網でも、ヘブ則をはじめとするホップフィールドネットワークの学習則と類似した現象がみられるため、実際の脳における学習則とこうした学習との関連性が盛んに研究されてるんや。</p>
+  <p>ホップフィールドネットワークはその後も発展してるんやで。最初は各ニューロンがイジングモデルのように２つの値をとる方法のみやったけど、連続値をとる方法も提案された他、近年提案されたモダン・ホップフィールドネットワークはエネルギー関数を工夫することで、非常に多くの低いエネルギーの状態を表現できるようになり、大量の記憶が可能になってるんや。</p>
+</section>
+
+<!-- ── エネルギーベースモデルとは ── -->
+<section class="sec" id="sec-ebm">
+  <h2 class="sec-title">エネルギーベースモデルとは</h2>
+  <p>ホップフィールドネットワークのように、エネルギーにもとづく生成モデルは、本書全体を通して重要なテーマやから、ここで詳しく説明するで。このようなモデルはエネルギーベースモデルとよばれるんや。</p>
+  <p>本書で述べるエネルギーは、正確には自由エネルギーやねん。物理世界において、系（考察の対象）のエネルギー（内部エネルギーとよばれる）は自由エネルギーとその他に分けることができるんや。熱力学第二法則により、系の自由エネルギーは減少する方向に自発的に変化するわけや。本書では、単にエネルギーという場合、自由エネルギーを指すものとするで。</p>
+  <p>エネルギーによる自発的な変化は次の例で考えるとわかりやすいんや（図15）。状態空間が水平方向に広がり、エネルギーが高さとして表現されるような地形を考えてみてほしい。ボールの位置が状態に対応するわけや。このとき適当な位置に落としたボールは、低い位置に向かって自発的に転がり、最終的に周囲より低い位置にとどまるんやな。これをエネルギーベースモデルの言葉で言い直すと、適当に初期化した状態から、エネルギーが低くなるように状態が自発的に更新されていき、エネルギーが周囲より低い状態に到達する、ということになるんや。</p>
+
+  <div class="fig">
+    <div class="fig-cap">図15：エネルギー地形とボールの転がり — 記憶との対応</div>
+    <svg viewBox="0 0 320 190" style="height:190px" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="a3" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+          <path d="M1,1 L6,3.5 L1,6" fill="none" stroke="#c8102e" stroke-width="1.2" stroke-linecap="round"/>
+        </marker>
+      </defs>
+      <!-- energy landscape -->
+      <path d="M20,60 Q50,55 80,80 Q100,95 120,50 Q135,20 150,50 Q165,75 185,140 Q200,165 220,140 Q245,110 270,130 Q290,142 310,138"
+            fill="none" stroke="#c8102e" stroke-width="2"/>
+      <!-- valley fills -->
+      <path d="M170,140 Q185,165 200,155 Q215,140 225,140 L225,175 L170,175 Z"
+            fill="rgba(200,16,46,0.08)"/>
+      <!-- ball rolling -->
+      <circle cx="108" cy="58" r="8" fill="#c8102e" opacity=".5"/>
+      <line x1="116" y1="62" x2="148" y2="70" stroke="#c8102e" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#a3)"/>
+      <circle cx="192" cy="148" r="9" fill="#c8102e" opacity=".85"/>
+      <!-- labels -->
+      <text x="104" y="46" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#c8102e">初期位置</text>
+      <text x="192" y="170" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#c8102e">記憶（低エネルギー）</text>
+      <!-- y axis -->
+      <line x1="14" y1="20" x2="14" y2="170" stroke="var(--rule)" stroke-width="1"/>
+      <text x="10" y="20" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">高</text>
+      <text x="10" y="170" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">低</text>
+      <text x="162" y="188" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">← エネルギー地形（状態空間）→</text>
+    </svg>
+  </div>
+
+  <p>エネルギーのしくみを用いた生成モデルは次のように実現されるんや。位置を与えるとそのエネルギーの値を返すようなエネルギー関数を用意するんやで。エネルギー関数はパラメータによって関数の形を変えることができるとするんや。さきほどの例ではニューラルネットワークをつかってエネルギー関数を表わしており、ニューラルネットワークのパラメータがエネルギー関数のパラメータやねん。以降では位置と状態は同じ意味であるとするで。</p>
+  <p>ある情報（状態）を記憶させる場合を考えてみよか。このとき、その位置のエネルギーが低くなるようにエネルギー関数を更新するんや。これは地形の一部を押し下げてへこませるような操作に対応するわけやな。逆に記憶対象でない位置は相対的に高くなるように更新されるんや。こうして記憶したい対象がエネルギーが低い位置にあり、それ以外が高い位置にあるようにするわけや。</p>
+  <p>このようにすれば、次に思い出すときにはエネルギーを低くした場所が思い出せることになるんや。またエネルギー関数はパラメータで表わされると説明したやろ。この場合、ある位置のエネルギーを低くするようにパラメータを更新すると、無数の他の位置のエネルギーの値も変わることになり、エネルギーが低くなったり、高くなったりするんや。これによって学習時にみたことがないようなデータが生成される汎化がおこることを期待するわけやで。</p>
+  <p>適当な位置にボールを置き、低い位置に向かって転がすことで、ボールは記憶対象の状態に到達するんや。例えば、犬の画像を記憶するように学習されたエネルギー関数では、エネルギーが低い位置に各犬の画像が対応してるんや。例えばある場所は柴犬、別の場所はブルドッグに対応してるわけやな。そしてどの犬の画像を思い出すかは、どこからスタートしたかという初期位置によって変わるんや（図15）。</p>
+</section>
+
+<!-- ── エネルギーベースモデルは連想記憶を自然に実現する ── -->
+<section class="sec" id="sec-associative">
+  <h2 class="sec-title">エネルギーベースモデルは連想記憶を自然に実現する</h2>
+  <p>エネルギーベースモデルの大きな特徴は、ある刺激をもとに他の記憶を思い出すという連想記憶を自然に達成できることやねん。これを説明するで。</p>
+  <p>例えば、犬の画像の上半分だけをみて下半分を補完する場合を考えてみよか（図16）。この場合、画像上半分に対応するニューロンを実際の観測値に設定し、下半分は適当に初期化するんや。画像としてみれば上半分が犬の画像、下半分は砂嵐のような画像に対応するわけやな。そして、上半分のニューロンは固定したまま、下半分のニューロンだけを全体のエネルギーが低くなるように更新していくんや。このとき、補完する下画像は、上半分の画像と調和する画像であればエネルギーは低くなり、そうでなければエネルギーは高くなってるわけや。こうして上半分の画像を手がかりにして下半分の画像を補完できるんやで。一部の状態をもとに、それに対応する調和のとれた残りの状態を、エネルギー関数を用いて探し出すことができるわけや。また、逆に、下半分の画像を固定して、上半分を補完することも可能やで。このような連想記憶として望ましい双方向性も自然に実現できるんや。</p>
+  <p>このようにエネルギー関数を定義し、エネルギーが低い領域と記憶を対応づけることで、様々な連想記憶を自然に実現できるんや。例えば、テキストと画像のペアに対してエネルギーを割り当てる場合を考えてみよか。実際に観測したテキストと画像のペアに対してエネルギーが低くなるように学習し、それ以外のペアについてはエネルギーが高くなるようにするんやな。この場合、テキスト側を観測値に固定し、画像側は適当に初期化するんや。そして、エネルギーが低くなる画像の状態を求めることで、テキストに対応する画像を生成できるわけやで。エネルギーベースモデルは、このように連想記憶を自然に実現できるんや。固定した側を生成の条件と考えると、条件付き生成を実現していることになるんやな。</p>
+  <p>エネルギーベースモデルは生成モデルとして注目され、ホップフィールドネットワーク以外にもボルツマンマシンやビリーフネットワークなど、様々な手法が登場したんや。</p>
+</section>
+
+<!-- ── エネルギーと確率との対応：ボルツマン分布 ── -->
+<section class="sec" id="sec-boltzmann">
+  <h2 class="sec-title">エネルギーと確率との対応：ボルツマン分布</h2>
+  <p>エネルギーは確率とも密接な関係をもってるんや。物理世界においてはエネルギーと確率はボルツマン分布によって相互に変換できるんやで。これを説明するで。</p>
+  <p>物理世界において、物体は無数の粒子から構成されており、これらの粒子はそれぞれ異なる状態、そして異なるエネルギーをもってるんや。例えば、気体中のある分子は高速で動いたり回転して高いエネルギーをもっているし、別の粒子はほとんど停止しており低いエネルギーをもってるわけや。このように、粒子ごとにエネルギーがばらつくため、常温でも水の中でたまたま高エネルギーをもっている水分子が蒸発するといったことがおこりうるんやな。</p>
+  <p>集団の中で粒子のエネルギーがどのように分布しているかについては、ボルツマン分布とよばれる分布でよく近似できることがわかってるんや。この分布は、高温で密度の低い粒子の集合の分布をよく表わすことができるんやで。ここではその数式を示すことはしないけど、その特徴を示すで。１つ目に、ボルツマン分布ではエネルギーが低ければ低いほど、確率は大きくなり、逆にエネルギーが高いほど確率は小さくなるんや。２つ目に、温度が高くなると確率分布は一様に近づき、逆に温度が低くなるとエネルギーが一番低い状態のみが確率１をもつような確率分布となるんやな。</p>
+  <p>ボルツマン分布はニューラルネットワークにおいて出力を確率分布に変換する関数（ソフトマックス関数）としても広く知られてるんや。この場合も、与えられた出力を負のエネルギーとみなし確率分布に変換するわけやで。</p>
+</section>
+
+<!-- ── ランジュバン・モンテカルロ法の原理 ── -->
+<section class="sec" id="sec-langevin">
+  <h2 class="sec-title">ランジュバン・モンテカルロ法の原理</h2>
+  <p>このボルツマン分布という確率分布が、エネルギー関数とどのように関係しているのかの理解を深めるため、与えられたエネルギー関数からそのボルツマン分布に従ってデータをサンプリングする方法を紹介するで。</p>
+  <p>さきほどと同様に、エネルギーを高さ、状態をボールの位置として考え、ボールを転がしていくことを想像してほしいんや（図17）。ただし、転がる際に常にランダムな方向からボールに力が加わる状況を追加で仮定するんや。この外力は温度が高いほど強くなるとするで。</p>
+  <p>このとき、ボールは低い方向に向かって転がっていくんやけど、必ずしも最も低い位置にとどまるわけではなく、外からのランダムな力によって常に揺れ動き続けるんや。その結果、ボールが少し高い位置にとどまることもあるんやで。また、周辺の高い壁を乗り越えることもあるんや。</p>
+  <p>温度が低ければ外力は小さくなり、エネルギーの低い状態にとどまりやすいんや。逆に温度が高ければ、エネルギーの高い状態にも時々は存在することになるわけやな。</p>
+  <p>このとき、ボールを転がし続け、十分な時間がたった後にボールがどの位置にあるかという確率は、ボルツマン分布に従うことを示すことができるんや。このようにしてデータをボルツマン分布に従ってサンプリングする方法を、ランジュバン・モンテカルロ法とよぶんやで。</p>
+  <p>まとめると、各状態／データにエネルギーが割り当てられているとき、ボルツマン分布を用いて、そのエネルギーを確率分布に変換することができるんや。逆に確率分布をエネルギーに変換することもできるわけやな。エネルギーは高さを表わし、状態はエネルギーが低くなる方向、すなわちボールが坂道を転がり落ちるように低い方向に向かって落ちていくんや。エネルギーが低ければ低いほど、その状態の確率が高く出現しやすいことを意味するわけやで。</p>
+</section>
+
+<!-- ── エネルギーベースモデルの致命的な問題 ── -->
+<section class="sec" id="sec-problems">
+  <h2 class="sec-title">エネルギーベースモデルの致命的な問題</h2>
+  <p>エネルギーベースモデルは記憶、特に連想記憶を自然にあつかうことができるため、生成モデルとして有望視されてきたんや。やけど残念ながら、そのままではいくつかの致命的な問題があるんやで。以下に、主な問題点を説明するで。</p>
+  <p>１つ目の問題点はサンプリング、つまり生成がとても遅いということやねん。さきほど説明したようにエネルギーが与えられたとき、ランジュバン・モンテカルロ法を用いてサンプリングが可能やけど、十分な数のステップ数を費やさないと正しいサンプリングにならへんのや。例えば、小さなでこぼこが続く平面に１カ所だけ深い穴がある場合、ランダムにボールを動かしてこの深い穴にたまたま落ちるには非常に長い時間がかかるわけやな。また、確率が低い（エネルギーが高い）領域を乗り越えるには非常に多くのステップ数を必要とするんや。このように、複雑なデータ分布をあつかうエネルギー関数では、エネルギー曲面が複雑であり、確率分布に従ってサンプリングするには非常に長い時間がかかるんやで。</p>
+  <p>２つ目の問題点は学習もとても遅いことやねん。学習においては、観測した状態に対応する位置のエネルギーを低くし、それ以外の位置のエネルギーが相対的に高くなるようにパラメータを更新するわけや。特に後者の、観測以外の位置のエネルギーが高くなるようにするのを保証するためには、パラメータを変えたときに、すべての位置のエネルギーがどう変わるのかを把握しなあかんのや。高次元空間は非常に広いため、すべての位置のエネルギー変化を把握するのは難しいんやで。そのため、ある位置のエネルギーを下げると、他の調べられていない無数の位置のエネルギーが意図しない形で変わってしまうということがおこりえるんや。</p>
+  <p>これらの問題により、エネルギーベースモデルは理論的には美しいけど、大規模な学習問題にはそのままでは適用が難しいとされてるんやな。</p>
+</section>
+
+<!-- ── コラム：現実世界は超巨大なシミュレーター ── -->
+<section class="sec" id="col-simulator">
+  <div class="column">
+    <div class="col-head">コラム ◉ 現実世界は超巨大なシミュレーター</div>
+    <div class="col-body">
+      <p>現実世界の粒子のエネルギー分布はボルツマン分布に従うと説明したんや。</p>
+      <p>例えば、重さ１ｇの水には１の後に０が22個続く膨大な数の水分子が含まれてるんやで。また、それらの水分子は１秒の間にも様々な状態をとることができるんや。そのため、１つの分子にとっては非常に低い確率でしかおきない現象でも、マクロなスケールでは（水分子の数も、とりうる状態の数も、膨大になるから）十分大きな確率でおきることになるわけやな。</p>
+      <p>これは言い換えると、現実世界は非常に巨大で高性能なシミュレーターやということやねん。現在最も高性能な計算機でもとても実現できないような膨大な量のシミュレーションができてる、といえるからや。計算機にできることは、現実世界のほんのわずかな部分を近似することでしかないんやで。そのため、現実世界とは違って、いわば様々なトリックをつかって、めったにおきないような現象をねらっておこしていく必要があるんや。</p>
+      <p>本書で紹介する拡散モデルも、そのようなトリックを実現する手法であるといえるやろな。エネルギーベースモデルをそのままつかったのでは大変な時間がかかってしまう問題を、拡散モデルという技によって高速に解くことができるようになるんやで。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── 空間全体の情報を支配する分配関数 ── -->
+<section class="sec" id="sec-partition">
+  <h2 class="sec-title">空間全体の情報を支配する分配関数</h2>
+  <p>エネルギーベースモデルはボルツマン分布という確率分布に変換できると説明したんや。</p>
+  <p>確率分布についておさらいしよか。確率分布とは、おきうる各事象に対して０以上の確率を割り当てたものやねん。そして、すべての事象に割り当てられた確率の合計がちょうど１となる必要があるんや。例えば、サイコロをふって何が出るかを考えた場合は、それぞれの目が出る確率は６分の１という確率分布やし、明日の天気の場合は、晴れ、くもり、雨になる確率が例えばそれぞれ２分の１、３分の１、６分の１といった確率分布となるんやな。</p>
+  <p>それぞれの事象に適当に確率を割り当てると、合計が１とはならへんのや。適当に割り当てて作った分布を確率分布とするには、各事象に適当に仮の確率を割り当てた後に、合計値が１となるように、各確率を合計値で割ればええんや。例えば、３つの状態「晴れ」「くもり」「雨」に確率を割り当てる場合、それぞれに０・７、０・６、０・３といった仮の値を適当に割り当てると、これらの合計は１・６となって１を超えてしまい、正しい確率分布にはならへんわけやな。これを正しい確率分布にするためには、最初に割り当てた各値を合計値１・６で割ればええんや（晴れ：０・４３７５、くもり：０・３７５、雨：０・１８７５となるんやで）。</p>
+  <p>同様に、各エネルギーから決まる、各状態の仮の確率の値を非正規化確率とよぶことにしようか。ボルツマン分布にもとづく確率分布を求める場合も、すべての状態の非正規化確率の合計を求め、非正規化確率を合計値で割る必要があるんや。この合計値を分配関数（または状態和）とよぶんやで（図18）。</p>
+  <p>先の例では１・６という合計値を与えるのが分配関数にあたるわけや。</p>
+  <p>このようにエネルギー関数から確率分布に変換するためには、分配関数を求める必要があるわけやな。</p>
+  <p>しかし高次元空間では、すべての状態の非正規化確率を列挙してその合計値を求めることは、状態の種類数が膨大であることから基本的に不可能やねん。この、分配関数を効率的に求めることができないということが、高次元データ上の確率分布を設計するのが難しい問題の本質やわけや。</p>
+  <p>エネルギーベースモデルの学習が遅いという問題も、分配関数を求めることが困難であるという問題と直接関係してるんや。ある位置のエネルギーを低くする際に、他のすべての位置のエネルギーにどのような影響が出るのかを調べる問題は、分配関数の計算と直接関わってるわけやで。</p>
+  <p>高次元空間上の確率分布を、空間全体の情報を知らなくても設計できる手法が必要となるんや。これが次の章から説明する流れをつかった生成やねん。その前にもう１つの重要な概念である、潜在変数モデルを紹介しようか。</p>
+</section>
+
+<!-- ── データは隠れた情報から生成されている ── -->
+<section class="sec" id="sec-latent">
+  <h2 class="sec-title">データは隠れた情報から生成されている</h2>
+  <p>潜在変数モデルとは、データが生成される際に直接データが生成されるのではなく、最初に潜在変数が生成され、次に潜在変数にもとづいてデータが生成されるというしくみの生成モデルのことやねん。</p>
+  <p>データは観測することができる変数なので観測変数（の値）とよぶんや。これに対し、潜在変数はデータからは直接観測できず、潜んで存在しているので潜在変数という名前が与えられてるんやな。</p>
+  <p>例えば、数字の手書き文字が画像データとして生成される場合を考えてみよか（図19）。この場合、潜在変数モデルでは、まず潜在変数として数字の種類やそのスタイルが生成され、次にこれらの情報にもとづき、観測変数である手書きの画像データが生成されるというふうに考えるんやで。カメラで撮影した画像の場合は、潜在変数はカメラの位置や姿勢、照明条件、撮影対象の種類や属性といったものであり、これらにもとづいて観測変数である画像が生成されるわけや。文章の場合は、文章を書く人がどういう人なのかや、文書のトピックなどが潜在変数であり、実際の文章が観測変数になるんやな。</p>
+
+  <div class="fig">
+    <div class="fig-cap">図19：潜在変数モデルの生成プロセス</div>
+    <svg viewBox="0 0 320 160" style="height:160px" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="a4" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+          <path d="M1,1 L6,3.5 L1,6" fill="none" stroke="#c8102e" stroke-width="1.2" stroke-linecap="round"/>
+        </marker>
+      </defs>
+      <rect x="20" y="20" width="120" height="50" rx="4" fill="rgba(200,16,46,0.08)" stroke="#c8102e" stroke-width="1.2"/>
+      <text x="80" y="42" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#c8102e" font-weight="500">潜在変数</text>
+      <text x="80" y="58" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">数字の種類・スタイル</text>
+      <line x1="142" y1="45" x2="176" y2="45" stroke="#c8102e" stroke-width="1.5" marker-end="url(#a4)"/>
+      <text x="159" y="38" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#555">生成モデル</text>
+      <rect x="178" y="20" width="122" height="50" rx="4" fill="none" stroke="#c8102e" stroke-width="1.2"/>
+      <text x="239" y="42" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#0d0d0d" font-weight="500">観測変数</text>
+      <text x="239" y="58" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">手書き文字画像</text>
+      <line x1="239" y1="72" x2="239" y2="92" stroke="#c8102e" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#a4)"/>
+      <line x1="80" y1="72" x2="80" y2="92" stroke="#c8102e" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#a4)"/>
+      <text x="80" y="112" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">観測不可</text>
+      <text x="239" y="112" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">観測可能</text>
+      <text x="160" y="145" text-anchor="middle" font-family="Noto Serif JP,serif" font-size="13" fill="#0d0d0d" font-style="italic">潜在変数 → 観測変数（多様体仮説の具体的な実現）</text>
+    </svg>
+  </div>
+
+  <p>このように、潜在変数とは対象データ全体の意味を表わすとともに、それを要約した情報やねん。また、潜在変数上でデータを少しずつ変化させていくと、観測変数も変化していくと考えるわけや。潜在変数は、多様体仮説における高次元のデータ空間中に埋め込まれた低次元の多様体に対応するんやで。潜在変数モデルは多様体仮説を具体的に利用した生成モデルといえるんや。</p>
+  <p>潜在変数は階層的に構成することも考えられるんや。最初に一番大まかな情報を捉えた潜在変数を生成し、次にこの潜在変数にもとづき、もう少し細かな情報を表わす潜在変数を生成するわけや。これを繰り返していき、最終的な観測変数が生成されるという生成モデルを考えることができるんやで。</p>
+  <p>潜在変数モデルで生成モデルを考える場合に、潜在変数はデータとしては与えられないことが問題となるんや。学習データ中に、このデータを生成したときの潜在変数の値も一緒に与えられればええんやけど、それは通常わからへんのや。どのようにすれば観測データだけから潜在変数モデルを学習できるやろか。</p>
+</section>
+
+<!-- ── 生成するためには認識が必要 ── -->
+<section class="sec" id="sec-helmholtz">
+  <h2 class="sec-title">生成するためには認識が必要</h2>
+  <p>潜在変数モデルによる生成モデルを実現するため、１９９５年にピーター・ダヤンとジェフリー・ヒントン（本章末のコラム「ノーベル賞２０２４年」参照）らがヘルムホルツマシンとよばれる生成モデルを提案したんや。この名前は、手法がヘルムホルツエネルギーに従っていることからつけられてるんやで。ヘルムホルツエネルギーとは、熱力学に由来する自由エネルギーのことやねん。</p>
+  <p>ヘルムホルツマシンは、データから、それを生成したであろう潜在変数を推定する認識モデルと、潜在変数からデータを生成する生成モデルを交互に学習するという考えを導入したんや（図20）。生成モデルと認識モデルは、それぞれ別のニューラルネットワークによって構成されてるわけやな。</p>
+  <p>このモデルでは、最初は認識モデルも生成モデルも適当に初期化されており、無作為にしか潜在変数を推定できへんのや。しかし学習を進めていくにつれて、徐々に意味のある潜在変数が当てられるようになってくるんや。認識モデルは今のデータにおける潜在変数をよりよく推定できるように学習を進め、生成モデルもよりうまく推定できるようになった潜在変数をつかって、よりうまく生成を学習することができるようになるんやで。認識モデルは実際に生成するときにはつかわず、生成タスクの学習を助けるためのみにつかわれるわけや。</p>
+  <p>例えば、動物の画像生成を学習する際には、認識モデルが最初にこれは犬か猫か、どちらを向いているか、といったことを学習するんや。生成モデルは、認識モデルで推定した潜在変数をもとに「左を向いている犬」という条件のもとで、「左を向いている犬」の画像を生成できるように学習するわけやな。</p>
+  <p>生成を学習するために生成モデルだけでなく認識モデルを同時に学習するというこの考えは、重要な発見やったんや。</p>
+</section>
+
+<!-- ── 変分自己符号化器（VAE） ── -->
+<section class="sec" id="sec-vae">
+  <h2 class="sec-title">変分自己符号化器（ＶＡＥ）</h2>
+  <p>ヘルムホルツマシンは手法自体は興味深いものやったけど、数字の手書き文字など、単純なデータ生成のみを実現するにとどまってたんや。</p>
+  <p>こうした潜在変数モデルを進化させ、高次元の画像データを生成可能にしたのが変分自己符号化器やねん。２０１３年末にディーデリク・キンフマとマックス・ウェリングが提案したんや。変分自己符号化器は英語でVariational AutoEncoderといい、その頭文字をとった略称でＶＡＥともよばれるんやで。</p>
+  <p>ＶＡＥは、ヘルムホルツマシンと同様に、ニューラルネットワークによる認識モデルと生成モデルから構成されるんや。ちょうど２０１３年当時は深層学習（ディープラーニング）とよばれる深く幅の広い大きなニューラルネットワークをつかった手法が登場しはじめていたので、ＶＡＥはそれまでよりずっと大きなモデルをつかうことができたんやな。</p>
+  <p>その上でＶＡＥでは変分ベイズとよばれる方法をつかって学習目標を定め、認識モデルと生成モデルの更新を同時に行なうんや。この更新は次のような仮想的な自己符号化器による学習によって実現されるわけや（図21）。</p>
+  <p>はじめに、認識モデルは観測変数からそれを生成したであろう潜在変数を推定するんや。次に推定された潜在変数にノイズを加えるんやで。その上で生成モデルは潜在変数から観測変数を生成するわけや。このように、あるデータを一度、変換した上で元に戻すというモデルを、自己符号化器とよぶんやな。ＶＡＥにおいて認識モデルが符号化、生成モデルが復号化に対応するんや。</p>
+  <p>自己符号化器を考える場合、潜在変数に何も制約がなければ、符号化モデルは観測変数をそのまま潜在変数にコピーし、復号化モデルは潜在変数をそのまま出力するのが最適になってしまうんや。このようなズルをせず、潜在変数が情報を要約した結果や抽象化した結果を表わせるように、潜在変数の次元数を低くしたりするんやで。ＶＡＥにおいては潜在変数の次元数を小さくするだけでなく、ノイズを加えた上で復元するという問題を学習時に解くんや。さらに、潜在変数の分布は正規分布に近づくような制約を加えた上で学習するわけやな。</p>
+  <p>生成する際には、認識モデルはつかわず、潜在変数を正規分布からサンプリングし（潜在変数の分布は正規分布に近づくように学習してるんや）、次に生成モデルが潜在変数からデータを生成するんやで。</p>
+  <p>ＶＡＥによって獲得された潜在変数空間は、多様体仮説で提唱されたようなデータ分布の隠れた低次元空間を捉えることに成功していることがわかったんや。潜在変数空間中で潜在変数を少しずつ動かすと、例えば人の顔の場合にはその顔が少しずつ変わっていったり、向きが変わっていく、ということに相当する現象がみつかったんやな（図10参照）。</p>
+  <p>このようにデータのみから、データの背後にある潜在空間を学習によって捉えることができ、また観測空間から潜在空間への変換（認識モデル）、またその逆の変換（生成モデル）も学習によって獲得できることが示されたんや。</p>
+</section>
+
+<!-- ── 潜在変数モデルの問題 ── -->
+<section class="sec" id="sec-vae-problems">
+  <h2 class="sec-title">潜在変数モデルの問題</h2>
+  <p>ＶＡＥで大規模な潜在変数モデルが実現されたけど、大規模な学習に適用する場合には課題が残されてるんや。</p>
+  <p>最も大きな問題は認識モデルの学習が難しいことやねん。認識モデルの学習は、推定した潜在変数による生成がうまくいくように学習されるんや。ＶＡＥによって、これはノイズ付きの自己符号化の問題設定としてみなせることも示されたわけやな。しかし、認識モデルが正しく潜在変数を推定できていない場合、生成モデルは認識モデルが推定した潜在変数は役に立たないので学習の際に無視する、といったことがおきてしまうんや。この現象は事後分布崩壊（Posterior Collapse）とよばれるんやで（認識モデルによる潜在変数の推定は事後分布の推定であり、これが崩壊することから名づけられてるわけや）。これを防ぐことが難しいんやな。さらに認識モデルと生成モデルを同時に学習するのは不安定やねん。これらの問題からＶＡＥを大規模化していくのは難しかったんや。</p>
+</section>
+
+<!-- ── コラム：GAN ── -->
+<section class="sec" id="col-gan">
+  <div class="column">
+    <div class="col-head">コラム ◉ 敵対的生成ネットワーク（ＧＡＮ）</div>
+    <div class="col-body">
+      <p>２０１４年にはイアン・グッドフェローらが敵対的生成ネットワーク（ＧＡＮ）とよばれる手法を提案したんや。ＧＡＮは、生成器と識別器を競合させることで、高品質なデータを生成できることを示したわけやで。具体的には、生成器は元のデータと似たデータを生成し、識別器は与えられたデータが本物のデータなのか、生成されたデータなのかを区別するように学習するんや。識別器はより詳細に違いをみつけられることを目指し、生成器は逆に識別器に見分けられないことを目指して学習するわけやな。まるでライバル関係のようにお互い切磋琢磨してうまく成長していくことができれば、高品質なデータ生成ができるようになるんやで。</p>
+      <p>ＧＡＮは高品質なデータ生成に初めて成功し、研究が広がっていったんや。しかし学習が不安定であるという工学的な問題があり、大規模化は難しかったんやな。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── コラム：自己回帰モデル ── -->
+<section class="sec" id="col-ar">
+  <div class="column">
+    <div class="col-head">コラム ◉ 自己回帰モデル</div>
+    <div class="col-body">
+      <p>高次元データの確率分布をあつかう場合には、分配関数の計算が問題となることを説明したんや。この分配関数の計算を回避するためには、問題を分配関数の計算が可能な小さな問題に分割し、それぞれの問題を解けるようにすればええんや。</p>
+      <p>こうした手法の代表が自己回帰モデルやねん。自己回帰モデルは高次元データを次のように分解するんや。まず、最初の次元の値を生成するわけやな。次に最初の次元の値で条件付けをして、次の次元の値を生成するんや。次に最初の次元の値と次の次元の値で条件付けをして、３つ目の次元の値を生成するんやで。これをすべての次元について繰り返していくわけや。</p>
+      <p>このようにすると、それぞれの生成モデルは、現在まで生成した次元の値で条件付けした次の次元の値の条件付き確率分布をあつかえればええんや。この場合は、全次元の組み合わせを一挙に考えるのではなく、１次元ずつの分配関数をあつかえばすむので、問題がずっと単純になるんやな。</p>
+      <p>現在の大規模言語モデルは自己回帰モデルをつかってるんや。</p>
+      <p>この自己回帰モデルは近似ではなく、正しい確率分布を推定でき効率的に高次元データをあつかえるんやけど、問題がいくつかあるんや。１つ目の問題は、高次元データの分解の仕方については毎回１通りでしか学習しないため、生成の際にも学習に用いた１通りの分解方法にひきずられてしまうことやねん。２つ目の問題は、データを生成する際には１つ１つの次元を順番に生成するしかないので、生成が遅くなることやで。</p>
+      <p>現在の計算機は並列計算を非常に高速にできるんや。それに対し、逐次計算（１つずつ順に処理する）は相対的に遅いんやな。自己回帰モデルは１つ１つの次元の値を順番に生成するために、逐次計算を必要とするんや。そのため自己回帰モデルによる生成は一般に遅くなりやすいわけやで。現在の大規模言語モデルもこのような逐次的な処理が推論時に必要であり、推論が遅くなりやすいんやな。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── コラム：ノーベル賞2024年 ── -->
+<section class="sec" id="col-nobel">
+  <div class="column">
+    <div class="col-head">コラム ◉ ノーベル賞２０２４年</div>
+    <div class="col-body">
+      <p>２０２４年のノーベル賞には本書に関係する人物が多く選出されたんや。</p>
+      <p>ノーベル物理学賞には、「人工ニューラルネットワークによる機械学習を可能にした基礎的な発見と発明」の業績により、ジョン・ホップフィールドとジェフリー・ヒントンが選ばれたんやで。</p>
+      <p>本章でも取り上げたように、ホップフィールドは物理学のモデルと連想記憶を結びつけホップフィールドネットワークを提唱したんや。必ずしも最初のアイディアではなかったけど、連想記憶と関連する本質だけを残したモデル化を行ない、その後の人工知能分野の研究に大きな影響を与えたんやな。また、これらのモデルは、本書で取り上げた生成モデルの方向だけでなく、誤り訂正符号や無線通信、情報統計力学といった分野でも大きく発展してるんやで。</p>
+      <p>一方、ヒントンはホップフィールドネットワークをもとに統計物理学や確率理論と組み合わせたボルツマンマシン（本書では詳しく取り上げなかった）を提唱したんや。また、ニューラルネットワーク分野で列挙できないほど多くの業績を挙げるとともに、多くの後進の育成に大きな貢献をしてるんやな。</p>
+      <p>ノーベル化学賞を受賞した３人のうちの２人には、「タンパク質の構造予測」の業績により、グーグル・ディープマインド（Google DeepMind）のデミス・ハザビスとジョン・Ｍ・ジャンパーが選ばれたんや。</p>
+      <p>タンパク質の構造予測は、その機能を理解する上で極めて重要やねん。特にタンパク質の合成技術が発達した中、新たに設計される未知のタンパク質の機能を予測する上で不可欠となってるんや。</p>
+      <p>最初のアルファフォールド（AlphaFold）は拡散モデルを採用したモデルではなかったけど、最新のアルファフォールド３は拡散モデルを採用し、タンパク質単独の構造だけではなく、リガンド（特異的に結合する物質で薬にもなる）や、抗体、ＤＮＡ、ＲＮＡとの結合状態の予測も可能となってるんやで。</p>
+      <p>これらの受賞は、ＡＩが科学技術の発展を促進するだけでなく、それ自体が科学技術の重要な一分野と認知されるようになったことを示す象徴的な出来事といえるんや。また、既存の学問分野の枠を超えた視点をもち、分野を超えて知識を融合させることが、革新的な発見につながることを示した例といえるわけやな。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── まとめ ── -->
+<section class="sec" id="sec-summary">
+  <div class="summary">
+    <h3>第２章 まとめ</h3>
+    <ul>
+      <li>この章では生成モデルについて紹介し、特にエネルギーベースモデルと潜在変数モデルについて紹介したんや。</li>
+      <li>刺激に応じて記憶を思い出す連想記憶は、エネルギーベースモデルによって、エネルギーが小さくなるように状態が自発的に変わるしくみとして実現されることを説明したわけやな。一方、学習や推論が遅いという問題があったんや。</li>
+      <li>潜在変数モデルは、データを直接生成するのではなく、最初にデータの抽象的な意味に対応する潜在変数を生成し、次に潜在変数にもとづいてデータ（観測変数）を生成するモデルやったんやで。これを実現するためには、データから潜在変数を推定する認識モデルも同時に学習することを説明したわけや。</li>
+      <li>しかし、潜在変数モデルは認識モデルの学習が難しく、有効な潜在変数を獲得することは容易やなかったんや。</li>
+      <li>これらを解決する手段はまったく別の発想から登場してくるんやで。</li>
+    </ul>
+  </div>
+</section>
+
+</article>
+</main>
+
+<script>
+window.addEventListener('scroll', () => {
+  const el = document.documentElement;
+  const pct = el.scrollTop / (el.scrollHeight - el.clientHeight) * 100;
+  document.getElementById('prog').style.width = pct + '%';
+});
+const subs = document.querySelectorAll('.nav-sub');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      subs.forEach(s => s.classList.remove('active'));
+      const link = document.querySelector(`.nav-sub[href="#${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+document.querySelectorAll('.sec[id]').forEach(s => observer.observe(s));
+const btn = document.getElementById('menu-btn');
+const nav = document.getElementById('nav');
+const overlay = document.getElementById('overlay');
+btn.addEventListener('click', () => { nav.classList.toggle('open'); overlay.classList.toggle('open'); });
+overlay.addEventListener('click', () => { nav.classList.remove('open'); overlay.classList.remove('open'); });
+document.querySelectorAll('.nav-ch, .nav-sub').forEach(a => {
+  a.addEventListener('click', () => { nav.classList.remove('open'); overlay.classList.remove('open'); });
+});
+</script>
+</body>
+</html>
