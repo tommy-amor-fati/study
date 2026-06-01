@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第1章 生成AIを作る｜生成AIのしくみ「流れ」</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0d0d0d;
+  --ink2: #2c2c2c;
+  --ink3: #666;
+  --paper: #fafaf8;
+  --paper2: #f2f0eb;
+  --paper3: #e8e4dc;
+  --rule: rgba(0,0,0,0.12);
+  --rule2: rgba(0,0,0,0.06);
+  --accent: #c8102e;
+  --accent2: #a00d24;
+  --accent-light: rgba(200,16,46,0.07);
+  --sidebar: 272px;
+  --serif: 'Cormorant Garamond','Noto Serif JP',serif;
+  --sans: 'Noto Sans JP',sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #f0ece4; --ink2: #ccc5b9; --ink3: #888;
+    --paper: #141210; --paper2: #1c1916; --paper3: #24201c;
+    --rule: rgba(255,255,255,0.1); --rule2: rgba(255,255,255,0.05);
+    --accent: #e8304a; --accent2: #ff4d65;
+    --accent-light: rgba(232,48,74,0.1);
+  }
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.8;-webkit-font-smoothing:antialiased}
+
+#prog{position:fixed;top:0;left:0;height:2px;width:0%;background:var(--accent);z-index:200;transition:width .1s linear}
+
+#nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;background:var(--paper2);border-right:1px solid var(--rule);overflow-y:auto;z-index:100;display:flex;flex-direction:column;padding:0 0 2rem}
+.nav-masthead{padding:2.2rem 1.6rem 1.6rem;border-bottom:1px solid var(--rule);margin-bottom:.8rem}
+.nav-series{font-family:var(--serif);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:.4rem}
+.nav-title{font-family:var(--serif);font-size:1.05rem;font-weight:500;color:var(--ink);line-height:1.45;margin-bottom:.35rem}
+.nav-author{font-size:.72rem;color:var(--ink3);font-weight:300}
+.nav-chapters{padding:0 .8rem}
+.nav-ch{display:flex;align-items:baseline;gap:.6rem;padding:.55rem .8rem;border-radius:3px;text-decoration:none;color:var(--ink2);font-size:.78rem;font-weight:400;line-height:1.4;transition:background .15s,color .15s;position:relative}
+.nav-ch::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:0;height:60%;background:var(--accent);border-radius:0 2px 2px 0;transition:width .15s}
+.nav-ch:hover{background:var(--paper3);color:var(--ink)}
+.nav-ch.active{color:var(--accent);font-weight:500}
+.nav-ch.active::before{width:3px}
+.nav-ch-num{font-family:var(--serif);font-style:italic;font-size:.72rem;color:var(--ink3);flex-shrink:0;min-width:1.2rem}
+.nav-sub{display:block;padding:.28rem .8rem .28rem 2.8rem;text-decoration:none;color:var(--ink3);font-size:.7rem;line-height:1.4;transition:color .15s;border-left:1px solid var(--rule);margin-left:1rem;margin-top:.1rem}
+.nav-sub:hover{color:var(--ink)}
+.nav-sub.active{color:var(--accent);border-left-color:var(--accent)}
+
+#main{margin-left:var(--sidebar);min-height:100vh}
+
+#cover{padding:7rem 5vw 5rem;max-width:820px;border-bottom:1px solid var(--rule)}
+.cover-eyebrow{font-family:var(--serif);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem}
+.cover-num{font-family:var(--serif);font-style:italic;font-size:7rem;font-weight:400;line-height:.85;color:var(--accent);opacity:.18;display:block;margin-bottom:-1rem}
+.cover-title{font-family:var(--serif);font-size:clamp(2.2rem,5vw,3.4rem);font-weight:600;line-height:1.15;color:var(--ink);margin-bottom:1.6rem;letter-spacing:-.01em}
+.cover-rule{width:3rem;height:2px;background:var(--accent);margin-bottom:1.6rem}
+.cover-lead{font-family:var(--serif);font-style:italic;font-size:1.12rem;line-height:1.75;color:var(--ink2);max-width:580px}
+
+.article{padding:0 5vw 6rem;max-width:820px}
+.sec{margin-top:3.5rem}
+.sec-title{font-family:var(--serif);font-size:1.45rem;font-weight:500;color:var(--ink);line-height:1.3;margin-bottom:1.4rem;padding-top:.2rem;position:relative;padding-left:1.1rem}
+.sec-title::before{content:'';position:absolute;left:0;top:.15em;width:4px;height:1em;background:var(--accent)}
+p{font-size:.965rem;line-height:1.95;color:var(--ink2);margin-bottom:1.1rem;text-align:justify}
+.pullquote{font-family:var(--serif);font-style:italic;font-size:1.2rem;line-height:1.65;color:var(--ink);border-left:3px solid var(--accent);padding:.8rem 1.4rem;margin:2rem 0;background:var(--accent-light)}
+.callout{background:var(--paper2);border-left:3px solid var(--accent);padding:1rem 1.3rem;margin:1.6rem 0;font-size:.88rem;line-height:1.8;color:var(--ink2)}
+.callout p{margin-bottom:.5rem;font-size:.88rem}
+.callout p:last-child{margin-bottom:0}
+.column{border:1px solid var(--rule);border-top:3px solid var(--accent);margin:2.5rem 0;background:var(--paper2)}
+.col-head{font-family:var(--sans);font-size:.7rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);padding:.75rem 1.3rem .6rem;border-bottom:1px solid var(--rule)}
+.col-body{padding:1.2rem 1.3rem}
+.col-body p{font-size:.875rem;line-height:1.85;color:var(--ink2);margin-bottom:.7rem}
+.col-body p:last-child{margin-bottom:0}
+.fig{margin:2rem 0}
+.fig-cap{font-size:.75rem;color:var(--ink3);font-weight:500;letter-spacing:.05em;margin-bottom:.6rem;border-bottom:1px solid var(--rule);padding-bottom:.4rem}
+.fig svg{display:block;width:100%;max-width:420px}
+.summary{background:var(--paper2);border:1px solid var(--rule);border-top:3px solid var(--accent);padding:1.8rem 2rem;margin-top:4rem}
+.summary h3{font-family:var(--serif);font-size:1.1rem;font-weight:600;color:var(--ink);margin-bottom:1rem}
+.summary ul{list-style:none;padding:0}
+.summary ul li{font-size:.875rem;line-height:1.75;color:var(--ink2);padding:.4rem 0 .4rem 1.2rem;border-bottom:1px solid var(--rule2);position:relative}
+.summary ul li:last-child{border-bottom:none}
+.summary ul li::before{content:'—';position:absolute;left:0;color:var(--accent);font-family:var(--serif)}
+
+#menu-btn{display:none;position:fixed;top:1rem;left:1rem;z-index:150;background:var(--paper2);border:1px solid var(--rule);border-radius:3px;width:2.4rem;height:2.4rem;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+#menu-btn span{display:block;width:18px;height:1.5px;background:var(--ink);transition:all .2s}
+#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:90}
+@media(max-width:960px){
+  :root{--sidebar:260px}
+  #nav{transform:translateX(-100%);transition:transform .25s ease}
+  #nav.open{transform:translateX(0)}
+  #overlay.open{display:block}
+  #menu-btn{display:flex}
+  #main{margin-left:0}
+  #cover{padding:5rem 1.4rem 3rem}
+  .article{padding:0 1.4rem 4rem}
+  .cover-num{font-size:5rem}
+}
+@media(max-width:480px){
+  #cover{padding:4.5rem 1rem 2.5rem}
+  .article{padding:0 1rem 3rem}
+  .cover-title{font-size:2rem}
+  .sec-title{font-size:1.2rem}
+  p{font-size:.93rem}
+}
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+<button id="menu-btn" aria-label="メニューを開く"><span></span><span></span><span></span></button>
+<div id="overlay"></div>
+
+<nav id="nav" aria-label="章ナビゲーション">
+  <div class="nav-masthead">
+    <div class="nav-series">岩波科学ライブラリー</div>
+    <div class="nav-title">生成AIのしくみ「流れ」</div>
+    <div class="nav-author">岡野原大輔 著</div>
+  </div>
+  <div class="nav-chapters">
+    <a class="nav-ch active" href="#cover">
+      <span class="nav-ch-num">1</span>生成AIを作る
+    </a>
+    <a class="nav-sub active" href="#sec-genai">生成AIとは</a>
+    <a class="nav-sub" href="#sec-conditional">指示や条件に従って生成させる</a>
+    <a class="nav-sub" href="#sec-applications">これまで生成が難しかったデータを生成できる</a>
+    <a class="nav-sub" href="#sec-rulebased">ルールベースから機械学習へ</a>
+    <a class="nav-sub" href="#sec-hard">生成タスクはとりわけ難しい機械学習問題</a>
+    <a class="nav-sub" href="#sec-ocean">データ生成は広大な海の中で島を見つけるようなタスク</a>
+    <a class="nav-sub" href="#sec-highdim">広大で奇妙な高次元空間</a>
+    <a class="nav-sub" href="#sec-diversity">生成において正解の出力は１つだけではない</a>
+    <a class="nav-sub" href="#sec-manifold">多様体仮説</a>
+    <a class="nav-sub" href="#sec-symmetry">対称性</a>
+    <a class="nav-sub" href="#sec-compositionality">構成性</a>
+    <a class="nav-sub" href="#sec-column">コラム</a>
+    <a class="nav-sub" href="#sec-summary">まとめ</a>
+  </div>
+</nav>
+
+<main id="main">
+
+<div id="cover">
+  <div class="cover-eyebrow">Chapter One</div>
+  <span class="cover-num" aria-hidden="true">1</span>
+  <h1 class="cover-title">生成ＡＩを作る</h1>
+  <div class="cover-rule"></div>
+  <p class="cover-lead">人が文章を書いたり、絵を描いたり、音楽を作れるようになるには、多くの年月の努力と才能を必要とする。この創作プロセスをＡＩに教えることはなぜ難しく、そして近年なぜ可能になったのか。</p>
+</div>
+
+<article class="article">
+
+<!-- ── 生成AIとは ── -->
+<section class="sec" id="sec-genai">
+  <h2 class="sec-title">生成ＡＩとは</h2>
+  <p>人が文章を書いたり、絵を描いたり、音楽を作れるようになるには、多くの年月の努力と才能を必要とする。何かを作るということはマニュアルがあって、そのマニュアルの手順に沿って実行すればできるというものではない。創作は創作者の意志と判断、無意識下の活動の融合による非常に複雑なプロセスによって実現されている。</p>
+  <p>人は自分自身が、どのようにこうした創作活動を行なっているのかを実はよくわかっていない。少なくとも言語やルールで説明することができない。そのため、ＡＩにデータを生成させようとした場合に、どのような手順で生成すればよいかを教えるのが難しかった。もし人がデータ生成の仕方をわかっているのであれば、その手順をプログラムやルールの形で計算機に教えさえすれば、人のようにデータを生成できるＡＩが実現できているはずだ。</p>
+  <p>こうした難しさがあることから、最近までＡＩが生成する文書や絵、音楽は稚拙で間違いが多く、単純でパターンが限られており、ぎこちないものだった。多くの人が、ＡＩに人のように様々なデータを生成させるのは永遠に解けない難問か、あるいはできるとしてもまだ多くの年月を必要とするのではないかと思っていた。</p>
+  <p>しかし、この数年でＡＩによってこれらのデータを生成できる技術が急速に進展し、ＡＩにデータを自由自在に生成させることが現実的になった。こうしたデータを生成するＡＩは「生成ＡＩ」とよばれる。</p>
+  <p>しかも、生成ＡＩの進歩の度合いは非常に速い。例えば、画像生成において、２０１０年代初頭にはまだ簡単な数字や絵を描くことしかできなかったが、わずか10年で、本物と区別がつかないほど現実に忠実で多様な画像を、誰でも生成できるようになった。動画生成に至っては２０１０年代末でも、意味のある動画生成は不可能であったが、現在では一貫性があって意味のある動画を生成できるようになっている。</p>
+</section>
+
+<!-- ── 指示や条件に従って生成させる ── -->
+<section class="sec" id="sec-conditional">
+  <h2 class="sec-title">指示や条件に従って生成させる</h2>
+  <p>生成ＡＩが無作為にデータを生成しても、それは役に立たない。ユーザーが具体的な指示や目標、生成時の制約や条件を与え、それに従ってデータを生成できて初めて、有用な生成結果となる。</p>
+  <p>絵や動画を生成するために生成ＡＩに与えるテキストによる指示は、プロンプトとよばれる。プロンプトでは生成対象やスタイル、要望などを伝えることができる（図１左）。こうした指示はテキストに限らない。人の画像を生成する際に、骨格のポーズを条件として与えて、そのポーズをとっている様々な人物画像を生成することもできる（図１右）。また、音声の場合には、特定の人物の声を条件にしたり、読み上げてほしいテキストを与えると、望みの声で特定のテキストを話させることもできる。</p>
+  <p>さらに、生成する際の制約を与えることができる。ある画像を制約として与えて、その周辺領域に広がる画像を生成させたり、低解像度の画像を与えてそれに対応する高解像度の画像を生成させることもできる。また、動画の場合には、中間フレームを補間したり、与えた動画と矛盾なく接続するような前後の動画を新たに生成することができる。</p>
+  <p>このようなプロンプトや生成のための指示や制約をまとめて、生成の条件とよぶ。生成ＡＩをつかう場合は生成の条件をつかって生成結果を制御することができ、条件は生成におけるハンドルやコントローラーのような役割を果たす。</p>
+  <p>このように条件を付けた生成を条件付き生成とよぶ。何を条件として何を生成させるかをいろいろと変えることで、実に多様な問題を条件付き生成問題として統一的に解くことができる。</p>
+</section>
+
+<!-- ── これまで生成が難しかったデータを生成できる ── -->
+<section class="sec" id="sec-applications">
+  <h2 class="sec-title">これまで生成が難しかったデータを生成できる</h2>
+  <p>本書であつかう流れをつかった生成は生成対象を問わないが、特に画像、音声、動画の生成、また生成以外にもロボット制御、構造推定などで成功し、多くつかわれている。</p>
+  <p>画像、音声、音楽の生成では既に商用化も進み、多くの人が利用している。画像生成はそのままつかわれることもあれば、様々な写真や画像編集ツールと統合され、本物と見分けがつかないほど写実的な画像やコミック調の画像を生成できる。音声では生き生きとした声で感情を感じさせたり抑揚をつけたりすることもできるようになっている。音楽の生成もサービスが次々と登場してきている。</p>
+  <p>動画は様々なデータの中でも最も生成するのが難しい対象であった。あつかうデータ量が膨大である上に他のデータに比べても圧倒的に内容が複雑であるためだ。この動画生成も流れをつかった生成によって初めて実現された。動画生成は、コンテンツとして生成するだけでなく、ロボットの制御や自動車の自動運転における計画の作成にも役立つ。どのように行動したら何がおきるのかという複雑な世界のダイナミクスを、動画情報として統一的にあつかえるのだ。</p>
+  <p>生成ＡＩの生成対象は制御にも広がる。様々な条件のもとで、指示を受けたロボットがどのように行動すればよいのか、制御列を生成する。例えば、ロボットに「机の上の皿を取って」と指示すると、ＡＩはその指示に従って、ロボットがどのように動くかを計画し、その計画にもとづいた動作を生成することができるし、「二足歩行をする際の各関節の目標値」を生成するようにすると、その目標角度を生成する（図２）。</p>
+
+  <div class="fig">
+    <div class="fig-cap">図２：ロボット制御への応用</div>
+    <svg viewBox="0 0 320 230" style="height:230px" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a1" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M1,1 L6,3.5 L1,6" fill="none" stroke="#c8102e" stroke-width="1.2" stroke-linecap="round"/></marker></defs>
+      <rect x="20" y="16" width="280" height="40" rx="4" fill="rgba(200,16,46,0.1)" stroke="#c8102e" stroke-width="1.2"/>
+      <text x="160" y="33" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#c8102e" font-weight="500">指示（条件）</text>
+      <text x="160" y="49" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#c8102e">「机の上の皿を取って」</text>
+      <line x1="160" y1="58" x2="160" y2="78" stroke="#c8102e" stroke-width="1.5" marker-end="url(#a1)"/>
+      <rect x="60" y="80" width="200" height="42" rx="4" fill="none" stroke="#c8102e" stroke-width="1.2"/>
+      <text x="160" y="99" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#0d0d0d">ＡＩが動作を計画</text>
+      <text x="160" y="115" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">制御列を生成</text>
+      <line x1="160" y1="124" x2="160" y2="144" stroke="#c8102e" stroke-width="1.5" marker-end="url(#a1)"/>
+      <rect x="60" y="146" width="200" height="42" rx="4" fill="none" stroke="#c8102e" stroke-width="1.2"/>
+      <text x="160" y="165" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#0d0d0d">ロボットが動作実行</text>
+      <text x="160" y="181" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">各関節の目標値を生成</text>
+      <line x1="160" y1="190" x2="160" y2="210" stroke="#c8102e" stroke-width="1.5" marker-end="url(#a1)"/>
+      <rect x="20" y="212" width="280" height="14" rx="3" fill="rgba(200,16,46,0.08)"/>
+      <text x="160" y="223" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#c8102e">タスク完了</text>
+    </svg>
+  </div>
+
+  <p>また、生成ＡＩは物質の構造を推定することができる。例えば、様々な原子から構成されるタンパク質がどのような構造をとるのかを推定することは生命科学にとって重要な問題であり、病気の原因の解明や新しい薬の開発につながる。そのためには、化合物の分子情報、つまりどの原子とどの原子がつながっているかを条件として与え、それぞれの原子がどのような位置にあるのかを生成する問題として考えることで、タンパク質の構造を推定できる（図３）。この場合、構造が既に解明されているタンパク質から構造の推定方法を学習し、構造が未知のタンパク質の構造を推定したり、薬がタンパク質と結合する様子を推定できる（第２章末のコラム「ノーベル賞２０２４年」参照）。</p>
+  <p>その一方で、生成ＡＩとして重要なアプリケーションである文章の生成モデル、大規模言語モデルにおいては、流れをつかった生成はまだ本格的につかわれていない。なぜつかうことが難しいのか、今後つかわれていくのかについては、最後の章で触れたいと思う。</p>
+</section>
+
+<!-- ── ルールベースから機械学習へ ── -->
+<section class="sec" id="sec-rulebased">
+  <h2 class="sec-title">ルールベースから機械学習へ</h2>
+  <p>ここからは生成ＡＩをどのように作っていくのかについて説明しよう。生成タスクに限らず、ＡＩを実現するにあたって最初に目指されたアプローチは、プログラムやルールの形で直接、専門家が問題の解き方をＡＩに教えるアプローチであった。こうしたアプローチによるＡＩを、ルールベースシステムやエキスパートシステムなどとよぶ。</p>
+  <p>こうしたアプローチはある程度までは成功し、多くの商用システムも登場しているが、問題が複雑になってくると、ルールベースでは解くことが難しい。本書で取り上げる生成タスクもまさにそのようなタスクとなる。</p>
+  <p>例えば、「夕暮れの海岸で、波打ち際を走る犬と飼い主のシルエット」という指示を与えて、画像を生成させる場合を考えてみよう。この場合、夕焼けの空の色、波の形状、ありうる犬と飼い主の動きはどのようなものかをあらかじめ教えておく必要がある。さらにそれらを組み合わせた場合にどうなるのかも教えなければならない。夕焼けは海の色に反映させなければならないし、その照り返しは犬や人の色にも影響を与える。物理的な法則から犬と飼い主のシルエットは太陽と反対の位置になければおかしいはずだ、といったようにだ。</p>
+  <p>このように複雑なタスクにおいては、ＡＩに教えなければならない知識の量は膨大になるし、それらを漏れなく列挙することも極めて難しくなる。さらに、ある部分の問題を修正すると他の部分に影響が出ることが多く、全体のバランスを保つのが難しい。あたかもモグラたたきのように、ある部分を修正したら他の問題が発生し、逐一対応することが必要となる。</p>
+  <p>このようなルールベースによる限界を克服するため、ＡＩ自体がデータからルールや知識を獲得する、いわゆる機械学習が急速に普及している。</p>
+  <p>機械学習とは、与えられた学習データにもとづいてＡＩ自体が学習していく手法である。例えば、犬と猫の画像を分類するＡＩを作る場合、犬と猫の画像とその正解ラベルを学習データとして提供し、ＡＩが自らその違いを見分けられるように学習する。これにより、ＡＩは新しい犬や猫の画像をみて、それらを判別できるようになる。</p>
+  <p>人ではとても列挙できず複雑かつ繊細な関係にある膨大なルールや知識を、ＡＩが学習の過程で獲得していく。インターネットやスマートフォンの普及により、大量のデータが容易に入手できるようになったことや計算機の驚異的な性能向上も、機械学習の発展を後押ししている。</p>
+  <p>本書は流れによる生成に注目するため機械学習について詳しくは触れないが、巻末の付録「機械学習のキーワード」に簡単にまとめているので参照してほしい。</p>
+</section>
+
+<!-- ── 生成タスクはとりわけ難しい機械学習問題 ── -->
+<section class="sec" id="sec-hard">
+  <h2 class="sec-title">生成タスクはとりわけ難しい機械学習問題</h2>
+  <p>生成というタスクも指示や条件などの入力から生成対象という出力を予測する問題であり、従来の機械学習の枠組みで実現できる。しかし、様々なタスクの中でも生成タスクは、機械学習で解くことが難しかった。機械学習は分類や認識タスクなどでは成功していたが、生成タスクはなぜ特別に難しいのか。２つ理由を説明する。</p>
+  <p>難しい理由の１つ目は、生成タスクは出力データが高次元データであるためである。</p>
+  <p>データを表現するのに必要な独立した変数の数を次元数とよぶ。あるデータを表わすのに最低限必要な数字の個数と思ってもらえればよい。例えば、温度や身長を表わすデータは１つの数値で表わせるので、次元数は１である。地球上の位置を表わすデータは緯度と経度の２つの数値で表現するので次元数は２となる。人間が普段生活している世界は３次元空間であり、ある位置を表わすためのデータは、３つの数値を指定すればよいので次元数は３となる。</p>
+  <p>これに対し、生成対象となるデータは、これらと比べて圧倒的に高次元である場合が多い。文章、画像、音声、動画、分子、時系列などはいずれも高次元データである。</p>
+  <p>具体的に生成対象データの次元数がどのくらい大きいかをみていこう。</p>
+  <p>フルカラー画像データの場合、各画素の色情報を表現するために一般的にＲＧＢ（赤、緑、青）の３つの値を使用する。そのため、フルカラー画像を表わそうと思った場合、画素数に３を掛けた値を指定する必要があり、これが次元数となる（図４）。例えば、ハイビジョンの画素数は１９２０×１０８０であり、次元数は１９２０×１０８０×３＝６２２万となる。</p>
+  <p>音声データの場合は、一定時間ごとの音圧の値を記録している。この記録の間隔は１秒間に何回サンプリングするかというサンプリングレートで表わされる（図５）。例えば、よくつかわれる44・１ｋHzのサンプリングレートで10秒間の音声を記録する場合、次元数は４万４１００×10＝44・１万となる。</p>
+  <p>動画データの場合、フレームとよばれる静止画が順番に並べられて構成されている。１秒間に何フレームをつかうかという単位をｆｐｓ（frame per second）とよぶ。24ｆｐｓから60ｆｐｓ程度で動画を表現する場合が一般的である。そして、フレームごとに静止画と同じ次元数が必要である。例えば、ハイビジョンで30ｆｐｓ、60秒からなる動画の次元数は、静止画の次元数の６２２万に30ｆｐｓと60秒を掛けて１１２億となる。動画の次元数は他のデータと比べても桁違いに大きい。</p>
+  <p>このように生成対象のデータは、数万から数百億といった次元数をもつ非常に高次元なデータである。</p>
+  <p>こうしたデータを生成するということは、それだけ大量の数値を正確に予測しなければいけないことになる。</p>
+
+  <div class="fig">
+    <div class="fig-cap">図４：フルカラー画像の次元数</div>
+    <svg viewBox="0 0 320 170" style="height:170px" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="20" width="80" height="80" rx="2" fill="none" stroke="#c8102e" stroke-width="1.2"/>
+      <rect x="20" y="20" width="20" height="20" fill="#c8102e" opacity=".7"/>
+      <rect x="40" y="20" width="20" height="20" fill="#4a90d9" opacity=".7"/>
+      <rect x="60" y="20" width="20" height="20" fill="#22a06b" opacity=".6"/>
+      <rect x="80" y="20" width="20" height="20" fill="#c8102e" opacity=".4"/>
+      <rect x="20" y="40" width="20" height="20" fill="#4a90d9" opacity=".5"/>
+      <rect x="40" y="40" width="20" height="20" fill="#f5f0e8" opacity=".9"/>
+      <rect x="60" y="40" width="20" height="20" fill="#c8102e" opacity=".3"/>
+      <rect x="80" y="40" width="20" height="20" fill="#4a90d9" opacity=".6"/>
+      <rect x="20" y="60" width="80" height="40" fill="#e8e4dc" opacity=".4"/>
+      <text x="60" y="116" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">画像（W × H 画素）</text>
+      <text x="170" y="42" font-family="Noto Sans JP,sans-serif" font-size="14" fill="#c8102e" font-weight="500">R</text>
+      <text x="192" y="42" font-family="Noto Sans JP,sans-serif" font-size="14" fill="#22a06b" font-weight="500">G</text>
+      <text x="214" y="42" font-family="Noto Sans JP,sans-serif" font-size="14" fill="#4a90d9" font-weight="500">B</text>
+      <text x="192" y="64" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#555">各画素に3値</text>
+      <text x="192" y="86" text-anchor="middle" font-family="Noto Serif JP,serif" font-size="13" fill="#0d0d0d">次元数 ＝ W × H × 3</text>
+      <text x="192" y="116" text-anchor="middle" font-family="Noto Serif JP,serif" font-size="14" fill="#c8102e" font-weight="500">ハイビジョン：約622万次元</text>
+      <text x="192" y="134" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">（1920 × 1080 × 3）</text>
+      <text x="192" y="154" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">音声10秒：約44万次元　動画60秒：約112億次元</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ── データ生成は広大な海の中で島を見つけるようなタスク ── -->
+<section class="sec" id="sec-ocean">
+  <h2 class="sec-title">データ生成は広大な海の中で島を見つけるようなタスク</h2>
+  <p>ここまで生成タスクの対象データは高次元であると説明した。こうした高次元のデータは高次元空間中の点として表わすことができる。</p>
+  <p>例えば３次元からなるデータは、３次元空間中の点として表わすことができる。同様に、もし、画像が１００万次元のデータであるとすれば、こうした画像は１００万次元空間中の点として表わすことができる。そして、この１００万次元という空間中のすべての点がそれぞれ、ありうる画像に対応している。例えば、ある点は横を向いている柴犬の画像に対応しており、別の点は海岸の画像に対応しているだろう。そしてほとんどの点は意味のない砂嵐のような画像に対応する（各画素の値をランダムに決めたら、ほぼ確実に砂嵐のような画像となるだろう）。</p>
+  <p>そして、データ生成という問題は、この高次元空間中で生成しようとしているデータがどこにあるかを探すような問題とみなすことができる。</p>
+  <p>譬えるならデータ生成は四方に膨大に広がる海の中で島を探すようなタスクである（図６）。</p>
+
+  <div class="fig">
+    <div class="fig-cap">図６：高次元空間は広大な海、データは小さな島</div>
+    <svg viewBox="0 0 320 200" style="height:200px" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="320" height="200" rx="4" fill="#eaf3fb" opacity=".6"/>
+      <path d="M0,95 Q40,80 80,95 Q120,110 160,95 Q200,80 240,95 Q280,110 320,95" fill="none" stroke="#4a90d9" stroke-width="1" opacity=".5"/>
+      <path d="M0,118 Q40,103 80,118 Q120,133 160,118 Q200,103 240,118 Q280,133 320,118" fill="none" stroke="#4a90d9" stroke-width="1" opacity=".35"/>
+      <ellipse cx="78" cy="72" rx="30" ry="17" fill="#c8102e" opacity=".18" stroke="#c8102e" stroke-width="1.2"/>
+      <text x="78" y="70" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#c8102e">柴犬</text>
+      <text x="78" y="84" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#a00d24">画像群</text>
+      <ellipse cx="210" cy="58" rx="26" ry="15" fill="#c8102e" opacity=".18" stroke="#c8102e" stroke-width="1.2"/>
+      <text x="210" y="56" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#c8102e">ブルドッグ</text>
+      <text x="210" y="70" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#a00d24">画像群</text>
+      <ellipse cx="268" cy="148" rx="20" ry="11" fill="#c8102e" opacity=".12" stroke="#c8102e" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="268" y="152" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">その他...</text>
+      <text x="160" y="185" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">広大な高次元空間（大半は砂嵐のような無意味なデータ）</text>
+    </svg>
+  </div>
+
+  <p>このとき、各島が様々なデータ生成候補に対応する。「犬」の画像を生成する場合であれば、ある島が「柴犬」に対応しており、他の島は「ブルドッグ」に対応しているだろう。</p>
+  <p>生成というタスクは、広大な海の中でこうした島をみつけるというタスクになる。</p>
+  <p>この海は恐ろしく広大である。そのため、適当な位置からスタートしランダムに適当な方向に進んでいったとしても、どこかの島にたどりつく可能性はまずない。また、島に近づくとしても、どのように近づけばいいのかすら簡単にはわからない。高次元空間では次元の数だけ進む方向があるのだ。</p>
+</section>
+
+<!-- ── 広大で奇妙な高次元空間 ── -->
+<section class="sec" id="sec-highdim">
+  <h2 class="sec-title">広大で奇妙な高次元空間</h2>
+  <p>このように、高次元データを生成するというのは、高次元空間の中で生成対象となるデータを探し出す問題とみなせる。</p>
+  <p>生成対象を探す高次元空間は、人間の直感がうまく働かないほど広大である。人間は１次元から３次元の世界しか知らず、どうしても低次元空間での直感にひきずられてしまうが、高次元では低次元とはまったく異なる世界となる。以下でそれを表わすいくつかの例を示そう。</p>
+  <p>白黒画像で各画素（次元）の値が１（黒）か０（白）しかとらない場合において、次元数が増えたときに画像の種類数がどのように変わるのかを考えてみよう（図７）。</p>
+  <p>１次元の場合、データの種類数は白と黒の２種類である。２次元の場合、データの種類の数は、白白、白黒、黒白、黒黒と４種類となる。このように、データの種類数は次元数が１つ増えるごとに倍になる。それでは縦横32×32からなる白黒画像のデータの種類数はどうなるかというと、次元数は32×32＝１０２４であり、データの種類数は２を１０２４回掛けた数となる。この数は１の後に０が約３００個続くほどの大きな数となり、宇宙に存在する原子数（１の後に０が80個続く数）よりも圧倒的に多い。つまりデータの種類数は宇宙に存在する原子数よりも圧倒的に多い。縦横がわずか32画素にすぎない小さな白黒画像の絵を生成するには、宇宙に存在する原子数よりも多い候補の白黒画像の中から正しい画像を求めなければならない。</p>
+  <p>このように、１０２４次元でそれぞれが２つの値しかとらない場合ですら、種類数はとても列挙できないほど大きい。高次元データはあっという間に種類数が増え、とてもすべてを網羅できないほど多くなってしまう。</p>
+  <p>従来の機械学習が成功していた分類や回帰といった問題は、これと比べると狭い範囲の候補値の中から正解の値を予測するという問題である。例えば１０００個のカテゴリのどれであるかを分類するという問題は、１０００種類の候補から１つ選ぶ問題である。これに対して生成問題では、とてもすべての値を列挙することは不可能なほど多くの種類の中から正解の値を求める問題となる。</p>
+  <p>次の例として、高次元空間は単に広いだけでなく、内側から外側に向かうに従って圧倒的に広くなっていく奇妙な空間であることを示そう。</p>
+  <p>例えば、私たちが日常世界を過ごす３次元空間で、直径が８㎝のりんごを考える（図８）。皮の厚さが０・２㎝だと仮定すると、りんご全体の体積の中で皮が占める割合は約14％と計算される。これに対し１０００次元空間における同じ直径８㎝、皮の厚さ０・２㎝のりんごを想像してみよう。この場合、外側に薄く存在する皮の占める割合は圧倒的になって、ほぼ１００％（９９・９…と９が22個続く）になる。つまり高次元空間のりんごは、同じ皮の厚さでも、ほとんどが皮で占められていることになる。それほど外側に向かうにつれて空間が圧倒的に広くなるのである。</p>
+
+  <div class="fig">
+    <div class="fig-cap">図８：高次元空間の「りんご」──外側になるほど急激に広がる</div>
+    <svg viewBox="0 0 320 170" style="height:170px" xmlns="http://www.w3.org/2000/svg">
+      <!-- 3D apple -->
+      <circle cx="80" cy="80" r="38" fill="none" stroke="#c8102e" stroke-width="1.2"/>
+      <circle cx="80" cy="80" r="32" fill="rgba(200,16,46,0.08)" stroke="#c8102e" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="80" y="76" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">中身</text>
+      <text x="80" y="92" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#c8102e">86%</text>
+      <text x="80" y="132" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#555">３次元空間</text>
+      <text x="80" y="148" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">皮 = 約14%</text>
+      <!-- 1000D apple -->
+      <circle cx="240" cy="80" r="38" fill="rgba(200,16,46,0.22)" stroke="#c8102e" stroke-width="2"/>
+      <circle cx="240" cy="80" r="4" fill="rgba(200,16,46,0.12)" stroke="#c8102e" stroke-width="1" stroke-dasharray="2,2"/>
+      <text x="240" y="84" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#c8102e">中身≈0%</text>
+      <text x="240" y="132" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#555">1000次元空間</text>
+      <text x="240" y="148" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#c8102e" font-weight="500">皮 ≈ 100%</text>
+    </svg>
+  </div>
+
+  <p>このように高次元空間はとてもすべての空間を見渡せないほど圧倒的に広く、中心から外側に向かうに従って急激に広がっていくという、低次元に生活する私たちからすると奇妙な世界である。生成問題は、この広大かつ奇妙な高次元空間の中で、生成対象のデータを探しだす問題をあつかわなければならない。</p>
+</section>
+
+<!-- ── 生成において正解の出力は１つだけではない ── -->
+<section class="sec" id="sec-diversity">
+  <h2 class="sec-title">生成において正解の出力は１つだけではない</h2>
+  <p>機械学習で生成問題を解くことが難しい２つ目の理由として、生成においては正解の出力の多様性があることが挙げられる。あらためて分類と生成のタスクを比較してみよう。分類の場合、正解となる値は１つだけである。例えば、動物の画像が与えられ、何の動物かを分類する場合は、正解は犬や猫など１つだけであり、１つの画像が同時に犬にも猫にも分類されることはない。</p>
+  <p>これに対して生成の場合は、正解として考えられる出力は無数に存在する（図９）。例えば条件として「夏休みの一日」という指示を与え、これに対応する画像を生成する問題を考えてみよう。この絵に対応する正解の絵は無数に存在する。例えば、海で遊んでいる絵もあれば、帰省している状況を表わした絵もあるだろう。</p>
+  <p>このように生成タスクでは１つの入力に対し無数の正解の出力候補がある。これに対し、一般に予測につかう関数は入力１つに対し出力１つを割り当てることしかできない。そのため、関数をそのままつかって生成問題を解くことができない。１つの入力から無数の出力を与えられるように関数を工夫してつかうことになる。</p>
+  <p>また、複数の正解や目標があることは、学習や評価の際に何をもって正解とし、何をもって学習の目標にすればよいかを複雑にする。例えば、評価のために入力に対し正解となる絵をいくつか用意しておくとする。そして、ＡＩが絵を生成したとする。このとき、ＡＩが生成した絵と、正解の絵が一致したら良いといえるだろう。しかし、たまたま生成した絵と正解の絵が一致することはまずありえないだろう。さらに、もし一致していないとしても悪いとは言い切れない。生成した絵が、用意していた正解とは別の正解例である場合も多くあるだろう。</p>
+  <p>理想的には無数の正解の絵を用意し、モデル側も無数の絵を生成し、それらが一致しているかどうかを測ることができればよい。しかし現実的には、無数の正解例を用意したり、生成したりすることは、コストや計算時間の観点で難しい。</p>
+  <p>このように生成タスクでは、１つの値を当てられるように学習していくのではなく、無数の正解を当てられるように学習する必要がある。</p>
+</section>
+
+<!-- ── 多様体仮説 ── -->
+<section class="sec" id="sec-manifold">
+  <h2 class="sec-title">多様体仮説──データは低次元に埋め込まれている</h2>
+  <p>ここまで述べてきた課題があるため、高次元データの生成を実現することは不可能にみえるぐらい難しい。しかし、幸いにも、現在、生成対象となっているデータ（画像、音声、動画など）は、いくつかの条件を満たすおかげで、それらを生成することができる。その条件を１つずつ紹介していこう。</p>
+  <p>１つ目は多様体仮説である。世の中の多くのデータは、みかけ上の次元数よりもずっと少ない数のパラメータで表現できる空間に分布していると考えられている。この仮説を多様体仮説とよぶ。</p>
+  <p>例えば、顔画像を考えてみよう。顔画像はみる向きを少し変えたり、照明を少し変えたりするのに従って滑らかに変化していく。こうした変化は画素単位でみれば非常に複雑に変化するが、その変化は非常に少ない数のパラメータで表現できる。顔の向きであれば向きを表わすためのパラメータがあれば表現できるし、照明であればその位置や種類や強さがあればよい。また、顔のバリエーション自体も、想像するよりもずっと少ない数のパラメータで表わすことができるとわかっている。</p>
+  <p>このように、みかけ上よりもずっと少ない数のパラメータで表わされ、かつ、その上で滑らかに変化する空間は、多様体という概念で説明できる。多様体は局所的には平坦な空間に似ているが、大域的には曲がっているような空間を指す。</p>
+  <p>例えば、地球の表面は２次元の多様体とみることができる。地球上の小さな領域だけをみれば、ほぼ平面のようにみえる。しかし、地球全体をみれば、それは曲面になっている。このように、多様体は局所的には平坦な空間に似ているが、大域的にはより複雑な構造をもっている。同様に、生成対象が織りなす世界も低次元の多様体と考えることができる。</p>
+  <p>あらためて、顔画像のデータセットを考えてみよう。各画像は非常に高次元な空間中のデータ点として表わされる。しかし、これらのデータ点の集合は「顔の多様体」とよばれる高次元空間に埋め込まれた低次元の多様体に対応する。これらの多様体上の点と高次元空間の点は対応しており、多様体上を少し移動すると、それに対応する顔画像の方も少しずつ変化する（図10）。</p>
+
+  <div class="fig">
+    <div class="fig-cap">図10・11：高次元空間に埋め込まれた低次元の多様体と相互変換</div>
+    <svg viewBox="0 0 320 200" style="height:200px" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a2" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M1,1 L6,3.5 L1,6" fill="none" stroke="#888" stroke-width="1.2" stroke-linecap="round"/></marker></defs>
+      <!-- high-dim space -->
+      <rect x="14" y="16" width="136" height="126" rx="4" fill="none" stroke="#c8102e" stroke-width="1.2" stroke-dasharray="4,3"/>
+      <text x="82" y="32" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#c8102e">高次元データ空間</text>
+      <text x="82" y="46" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">（100万次元）</text>
+      <!-- manifold curve -->
+      <path d="M30,130 Q55,68 88,98 Q112,118 150,76" fill="none" stroke="#c8102e" stroke-width="2.2"/>
+      <circle cx="46" cy="108" r="4" fill="#c8102e" opacity=".65"/>
+      <circle cx="68" cy="78" r="4" fill="#c8102e" opacity=".65"/>
+      <circle cx="96" cy="96" r="4" fill="#c8102e" opacity=".65"/>
+      <circle cx="128" cy="80" r="4" fill="#c8102e" opacity=".65"/>
+      <text x="82" y="154" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">データは細い曲面に分布</text>
+      <!-- arrow -->
+      <line x1="158" y1="79" x2="172" y2="79" stroke="#888" stroke-width="1.5" marker-end="url(#a2)"/>
+      <text x="165" y="68" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#555">変換</text>
+      <!-- manifold space -->
+      <rect x="176" y="46" width="130" height="78" rx="4" fill="rgba(200,16,46,0.07)" stroke="#c8102e" stroke-width="1.2"/>
+      <text x="241" y="62" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#c8102e">多様体空間</text>
+      <text x="241" y="76" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">（数百〜数千次元）</text>
+      <circle cx="200" cy="100" r="4" fill="#c8102e" opacity=".6"/>
+      <circle cx="220" cy="100" r="4" fill="#c8102e" opacity=".6"/>
+      <circle cx="240" cy="100" r="4" fill="#c8102e" opacity=".6"/>
+      <circle cx="260" cy="100" r="4" fill="#c8102e" opacity=".6"/>
+      <circle cx="280" cy="100" r="4" fill="#c8102e" opacity=".6"/>
+      <text x="241" y="116" text-anchor="middle" font-family="Noto Sans JP,sans-serif" font-size="13" fill="#666">全位置にデータが密に存在</text>
+      <text x="160" y="182" text-anchor="middle" font-family="Noto Serif JP,serif" font-size="13" fill="#0d0d0d" font-style="italic">多様体 ⇄ データ空間の相互変換が生成の鍵</text>
+    </svg>
+  </div>
+
+  <p>高次元空間中では生成対象のデータは全体のほんの一部分にしか存在せず、まるで泡の膜のように空間中の一部分に薄く分布している。これに対し、対応する低次元の多様体では中身がすべてつまっており、すべての位置にぎっしりとすべてのデータが分布している（パラメータをどのように変えてもそれに対応するデータが存在する）。ここで注意しておきたいのは、多様体上の近さと元のデータ空間中の近さは一致しないこともあることだ。例えば顔画像全体が１画素分左にずれたとする。この顔画像は元の画像とよく似た画像であり、多様体上では近くにあるはずだが、元の高次元空間上ではまったく違う位置にある。</p>
+  <p>このように、多様体上では元の情報を非常に圧縮した形で表現できている。元の高次元空間では数百万次元であるのに対して、多様体上では例えば、照明条件、顔の向き、顔の種類といったものを考えても、数百から数千次元で表わすことができるだろう。</p>
+  <p>このような多様体という新たな空間に分布するデータを考え、多様体とデータ空間とを相互変換するしくみがあれば、生成ができることになる（図11）。</p>
+  <p>生成モデルの大きな目的の１つは、この多様体の構造と、多様体とデータ空間の間を変換する方法を学習することだといえる。つまり、生成モデルとしては、高次元空間中でデータを構成する多様体がどのように分布しているかをみつけ、その多様体から新しいデータを生成できるようになることが重要である。うまく多様体をみつけられれば、みかけ上の高次元ではなく、低次元の空間中でデータ生成問題をあつかうことができる。</p>
+  <p>このように多様体は高次元データの性質を理解し、生成モデルを構築する上で重要な概念である。</p>
+</section>
+
+<!-- ── 対称性 ── -->
+<section class="sec" id="sec-symmetry">
+  <h2 class="sec-title">対称性──データには変換に対する不変性がある</h2>
+  <p>生成問題を解決可能にする２つ目の重要なポイントが対称性の存在である。</p>
+  <p>世の中は対称性に満ちあふれている。例えば、人の顔や体は完全ではないが左右対称な形をしている。雪の結晶はきれいな六角形や十二角形の形をなしている。</p>
+  <p>さらに対称性は、こうした形状や見た目だけに成り立つものではない。より一般には、何らかの変換を適用した前後で変化しない性質をもつ場合に、その変換に対して対称性があるという。</p>
+  <p>例えば左右対称というのは、真ん中に鏡を置いて、左側半分を鏡に映して右半分に投影させたとしても形状が変わらないことを指す。また、六角形における対称とは、中心を軸にその形を６分の１だけ回転させても形状が変わらないことを指す（図12）。</p>
+  <p>私たちが生きる世界はミクロな世界でもマクロな世界でも、様々な対称性に満ちあふれているのである。</p>
+  <p>そして、生成対象となるデータにも同様に多くの対称性が存在する。例えば画像データは、縦、横に平行移動させたとしても意味は変わらない。これを並進対称性があるとよぶ。また、衛星画像などでは、画像を回転させたとしても意味は変わらない。これを回転対称性があるとよぶ。音声の波形データは時間を前後させたとしても意味は変わらない。これを時間移動対称性（不変性）があるとよぶ。</p>
+  <p>化合物データや点群データ（形状を表わす）の場合は、座標軸をどのようにとるかによらず、データの意味は変わらない。この場合もデータに並進や回転不変性があるといえる。</p>
+  <p>こうした生成対象のデータがもつ対称性は、生成対象の候補の種類数を劇的に減らすことに役立ち、探索するデータの海を劇的に狭くできる。</p>
+  <p>例えば画像生成では、ある位置で生成する方法を学んでおけば、それを並進させた場合を別々に覚えておく必要はない。それらは同じ対象を単に移動させた結果として学習させておけばよい。</p>
+  <p>自然界にみられるデータはこのような対称性に満ちており、人間が気づいていない対称性も無数にある。生成しようとしているデータに対称性がみられれば、学習しなければいけないルールや法則を劇的に減らすことができる。</p>
+</section>
+
+<!-- ── 構成性 ── -->
+<section class="sec" id="sec-compositionality">
+  <h2 class="sec-title">構成性──データは多くの部品の組み合わせで成り立っている</h2>
+  <p>また、世の中の多くのデータは構成性を備えている。構成性とは単純な部品の組み合わせによって成り立っていることを指す。例えば、画像データを考えた場合、そこに写っている複数の物体や背景が組み合わさって画像はできていることがわかる。それらの物体や背景もさらに、複数の構成要素から成り立っていることがいえる。</p>
+  <p>この場合、例えば画像の生成方法を学ぶ際、月の描き方を学び、海岸の描き方を学び、街の描き方を学んでいれば、これらを組み合わせて街の近くの海岸に月が浮かんでいる画像を生成できる。</p>
+  <p>組み合わせの数は膨大になる。１００個のものから10個組み合わせる方法を考えると17兆通りにもなる。構成性があることによって膨大な数の変種を個別に覚えずに効率的に学べる。</p>
+  <p>このように生成する対象に構成性があれば、作り方を学ぶ際に、問題を部分ごとに分割し、それぞれの部分の生成方法を学び、またそれらの部分の組み合わせ方を学びさえすればよい。非常に複雑なデータの生成方法を学ぶことができることになる。</p>
+  <p>以上のように生成対象のデータが、多様体としての性質、対称性、構成性をもっていると、たとえそれが高次元データであったとしても、有限のデータから効率的に生成方法を学習することができる。</p>
+</section>
+
+<!-- ── コラム ── -->
+<section class="sec" id="sec-column">
+  <div class="column">
+    <div class="col-head">コラム ◉ データがもつ特性は人が与えるのか、自ら学習するのか</div>
+    <div class="col-body">
+      <p>身の回りの世界の生成対象データがもつ特性として、多様体としての性質、対称性、構成性について紹介した。こうした特徴は人（ＡＩモデルを作る人）が設計して導入することもあれば、学習の過程でＡＩモデルが勝手に獲得することもある。特に対称性、構成性については、人が設計して導入する場合もあるが、モデルが学習の過程で自動的に獲得している場合が多いこともわかっている。</p>
+      <p>現在、生成モデルを作るのにつかわれているニューラルネットワークとよばれるモデルは、これらの特性を与えて設計される場合もあるし、学習の過程で、対称性や構成性を利用した学習をモデル自体が実現することもわかっている。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── まとめ ── -->
+<section class="sec" id="sec-summary">
+  <div class="summary">
+    <h3>第１章 まとめ</h3>
+    <ul>
+      <li>この章では、生成を学習することが難しい理由として、生成対象が高次元データであり、出力に多様性があることを説明した。</li>
+      <li>生成対象が高次元であるとはすなわち、数万から数百億といった次元数をもつ非常に大量の数値を正確に予測しなければならないことを意味する。</li>
+      <li>生成においては正解の出力が無数に存在するため、１つの値を当てる学習では不十分で、無数の正解を当てられるように学習する必要がある。</li>
+      <li>これらを解決する条件として、データがみかけより小さい次元の多様体に埋め込むことができること（多様体仮説）が挙げられる。</li>
+      <li>また、データに対称性（並進・回転・時間移動不変性など）があることで、学習すべきルールや法則を劇的に減らすことができる。</li>
+      <li>さらに、データに構成性（部品の組み合わせ）があることで、膨大な変種を個別に覚えずに効率的に学習できる。</li>
+      <li>こうしたデータがもつ性質を機械はどのように獲得し利用できるのか──これについては次の章で生成ＡＩの歴史として述べていく。</li>
+    </ul>
+  </div>
+</section>
+
+</article>
+</main>
+
+<script>
+window.addEventListener('scroll', () => {
+  const el = document.documentElement;
+  const pct = el.scrollTop / (el.scrollHeight - el.clientHeight) * 100;
+  document.getElementById('prog').style.width = pct + '%';
+});
+
+const subs = document.querySelectorAll('.nav-sub');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      subs.forEach(s => s.classList.remove('active'));
+      const link = document.querySelector(`.nav-sub[href="#${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+document.querySelectorAll('.sec[id]').forEach(s => observer.observe(s));
+
+const btn = document.getElementById('menu-btn');
+const nav = document.getElementById('nav');
+const overlay = document.getElementById('overlay');
+btn.addEventListener('click', () => { nav.classList.toggle('open'); overlay.classList.toggle('open'); });
+overlay.addEventListener('click', () => { nav.classList.remove('open'); overlay.classList.remove('open'); });
+document.querySelectorAll('.nav-ch, .nav-sub').forEach(a => {
+  a.addEventListener('click', () => { nav.classList.remove('open'); overlay.classList.remove('open'); });
+});
+</script>
+</body>
+</html>
